@@ -39,6 +39,14 @@ class HomeController extends Controller
             (new EloquentCollection($flashProducts->all()))->loadAvg('reviews', 'rating')->loadCount('reviews');
         }
 
+        $newProducts = Product::active()->where('is_new', true)->with(self::RELATIONS)->latest('id')->limit(8)->get();
+
+        if ($newProducts->isEmpty()) {
+            $newProducts = Product::active()->with(self::RELATIONS)->latest('id')->limit(8)->get();
+        }
+
+        $newProducts->loadAvg('reviews', 'rating')->loadCount('reviews');
+
         return view('frontend.index', [
             'banners' => Banner::active()->get(),
             'homeCategories' => $homeCategories,
@@ -46,7 +54,7 @@ class HomeController extends Controller
             'flashDeal' => $flashDeal,
             'flashProducts' => $flashProducts,
             'featuredProducts' => Product::active()->where('is_featured', true)->with(self::RELATIONS)->latest('id')->limit(8)->get(),
-            'newProducts' => Product::active()->where('is_new', true)->with(self::RELATIONS)->latest('id')->limit(8)->get(),
+            'newProducts' => $newProducts,
             'categorySections' => $categorySections,
         ]);
     }
