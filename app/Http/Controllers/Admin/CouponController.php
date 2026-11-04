@@ -49,7 +49,7 @@ class CouponController extends Controller
             $this->syncTargets($coupon, $request);
         });
 
-        return to_route('admin.coupons.index')->with('success', 'Coupon updated');
+        return to_route('admin.coupons.edit', $coupon)->with('success', 'Coupon updated');
     }
 
     public function toggle(Coupon $coupon): RedirectResponse

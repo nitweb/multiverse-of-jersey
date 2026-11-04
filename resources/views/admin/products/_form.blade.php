@@ -55,6 +55,34 @@
         </section>
 
         <section class="card">
+            <div class="card-h"><h3>Front & back view</h3></div>
+            <div class="card-b">
+                <div class="grid sm:grid-cols-2 gap-5">
+                    @foreach (['front' => 'Front image', 'back' => 'Back image'] as $side => $label)
+                        @php
+                            $currentImage = $product?->{$side.'_image'};
+                        @endphp
+                        <div>
+                            <label class="drop block" for="{{ $side }}_image">
+                                <input type="file" id="{{ $side }}_image" name="{{ $side }}_image" class="hidden" accept="image/*" data-preview="#{{ $side }}-preview">
+                                <img id="{{ $side }}-preview" src="{{ $currentImage ? asset($currentImage) : asset('assets/admin/img/no-image.svg') }}" class="w-full max-h-64 object-cover rounded-2xl mb-3" alt="">
+                                <p class="font-bold">Upload {{ strtolower($label) }}</p>
+                                <p class="text-xs text-ink/50 mt-1">WEBP, PNG or JPG · up to 5 MB · saved as 800×800 webp</p>
+                            </label>
+                            @if ($currentImage)
+                                <label class="flex items-center gap-2 text-xs mt-2 cursor-pointer text-danger">
+                                    <input type="checkbox" name="remove_{{ $side }}_image" value="1" @checked(old('remove_'.$side.'_image'))> Remove {{ strtolower($label) }}
+                                </label>
+                            @endif
+                            @error($side.'_image')<p class="text-danger text-xs mt-2">{{ $message }}</p>@enderror
+                        </div>
+                    @endforeach
+                </div>
+                <p class="hint mt-3">Shown on product cards (flash deals): front by default, back on hover.</p>
+            </div>
+        </section>
+
+        <section class="card">
             <div class="card-h"><h3>Product media</h3></div>
             <div class="card-b">
                 @if ($product && $product->images->isNotEmpty())
@@ -63,10 +91,7 @@
                         @foreach ($product->images as $image)
                             <div class="border border-line rounded-2xl p-2 bg-white" data-existing>
                                 <img src="{{ $image->url }}" alt="" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:.75rem">
-                                <label class="flex items-center gap-2 text-xs mt-2 cursor-pointer">
-                                    <input type="radio" name="cover_image" value="{{ $image->id }}" @checked((string) old('cover_image', $product->images->first()->id) === (string) $image->id)> Cover
-                                </label>
-                                <label class="flex items-center gap-2 text-xs mt-1 cursor-pointer text-danger">
+                                <label class="flex items-center gap-2 text-xs mt-2 cursor-pointer text-danger">
                                     <input type="checkbox" name="remove_images[]" value="{{ $image->id }}" @checked(in_array($image->id, $removed, true))> Remove
                                 </label>
                             </div>
@@ -78,7 +103,7 @@
                     <input type="file" class="hidden" id="images" name="images[]" multiple accept="image/*">
                     <span class="w-14 h-14 rounded-2xl bg-white text-primary grid place-items-center mx-auto shadow"><svg class="ic ic-lg"><use href="#i-upload" /></svg></span>
                     <p class="font-bold mt-3">Click to upload or drag & drop</p>
-                    <p class="text-xs text-ink/50 mt-1">WEBP, PNG or JPG · up to 5 MB each · saved as 800×800 webp · first image is the cover</p>
+                    <p class="text-xs text-ink/50 mt-1">WEBP, PNG or JPG · up to 5 MB each · saved as 800×800 webp</p>
                 </label>
                 <div id="new-gallery" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(7.5rem,1fr));gap:.75rem" class="mt-4"></div>
                 @error('images')<p class="text-danger text-xs mt-1">{{ $message }}</p>@enderror

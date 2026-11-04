@@ -87,6 +87,7 @@ class ProductController extends Controller
             $this->syncVariants($product, $request->input('variants', []));
             $this->storeImages($product, $request->file('images', []));
             $this->reorderImages($product, null);
+            $this->syncSideImages($product, $request);
         });
 
         return to_route('admin.products.index')->with('success', 'Product saved');
@@ -117,9 +118,10 @@ class ProductController extends Controller
 
             $this->storeImages($product, $request->file('images', []));
             $this->reorderImages($product, $request->filled('cover_image') ? (int) $request->input('cover_image') : null);
+            $this->syncSideImages($product, $request);
         });
 
-        return to_route('admin.products.index')->with('success', 'Product updated');
+        return to_route('admin.products.edit', $product)->with('success', 'Product updated');
     }
 
     public function toggle(Product $product): RedirectResponse
@@ -134,6 +136,9 @@ class ProductController extends Controller
         foreach ($product->images as $image) {
             $this->deleteFile($image->path);
         }
+
+        $this->deleteFile($product->front_image);
+        $this->deleteFile($product->back_image);
 
         $product->delete();
 
@@ -156,7 +161,7 @@ class ProductController extends Controller
      */
     private function payload(ProductRequest $request, ?int $ignoreId = null): array
     {
-        $data = $request->safe()->except(['images', 'remove_images', 'cover_image', 'variants']);
+        $data = $request->safe()->except(['images', 'remove_images', 'cover_image', 'variants', 'front_image', 'back_image', 'remove_front_image', 'remove_back_image']);
         $data['description'] = \App\Support\HtmlSanitizer::clean($data['description'] ?? null) ?: null;
         $data['slug'] = $this->resolveSlug($request->input('slug'), $data['name'], $ignoreId);
 
@@ -229,18 +234,37 @@ class ProductController extends Controller
             return;
         }
 
-        File::ensureDirectoryExists(public_path(self::DIRECTORY));
-
         $order = (int) $product->images()->max('sort_order');
-        $manager = new ImageManager(new Driver);
 
         foreach ($files as $file) {
-            $path = self::DIRECTORY.'/'.Str::uuid().'.webp';
-
-            $manager->read($file)->cover(self::IMAGE_SIZE, self::IMAGE_SIZE)->toWebp(85)->save(public_path($path));
-
-            $product->images()->create(['path' => $path, 'sort_order' => ++$order]);
+            $product->images()->create(['path' => $this->storeFile($file), 'sort_order' => ++$order]);
         }
+    }
+
+    private function syncSideImages(Product $product, ProductRequest $request): void
+    {
+        foreach (['front_image', 'back_image'] as $column) {
+            $file = $request->file($column);
+
+            if ($file) {
+                $this->deleteFile($product->{$column});
+                $product->update([$column => $this->storeFile($file)]);
+            } elseif ($request->boolean('remove_'.$column) && $product->{$column}) {
+                $this->deleteFile($product->{$column});
+                $product->update([$column => null]);
+            }
+        }
+    }
+
+    private function storeFile(UploadedFile $file): string
+    {
+        File::ensureDirectoryExists(public_path(self::DIRECTORY));
+
+        $path = self::DIRECTORY.'/'.Str::uuid().'.webp';
+
+        (new ImageManager(new Driver))->read($file)->cover(self::IMAGE_SIZE, self::IMAGE_SIZE)->toWebp(85)->save(public_path($path));
+
+        return $path;
     }
 
     private function reorderImages(Product $product, ?int $coverId): void

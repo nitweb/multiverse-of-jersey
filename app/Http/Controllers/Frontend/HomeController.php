@@ -8,6 +8,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\FlashDeal;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\View\View;
 
 class HomeController extends Controller
@@ -32,13 +33,18 @@ class HomeController extends Controller
             ->values();
 
         $flashDeal = FlashDeal::live()->firstWhere('show_on_home', true);
+        $flashProducts = $flashDeal?->activeProducts(4) ?? collect();
+
+        if ($flashProducts->isNotEmpty()) {
+            (new EloquentCollection($flashProducts->all()))->loadAvg('reviews', 'rating')->loadCount('reviews');
+        }
 
         return view('frontend.index', [
             'banners' => Banner::active()->get(),
             'homeCategories' => $homeCategories,
             'homeBrands' => Brand::active()->featured()->get(),
             'flashDeal' => $flashDeal,
-            'flashProducts' => $flashDeal?->activeProducts(8) ?? collect(),
+            'flashProducts' => $flashProducts,
             'featuredProducts' => Product::active()->where('is_featured', true)->with(self::RELATIONS)->latest('id')->limit(8)->get(),
             'newProducts' => Product::active()->where('is_new', true)->with(self::RELATIONS)->latest('id')->limit(8)->get(),
             'categorySections' => $categorySections,

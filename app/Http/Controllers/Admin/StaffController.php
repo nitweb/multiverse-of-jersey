@@ -109,7 +109,7 @@ class StaffController extends Controller
 
         $staff->save();
 
-        return to_route('admin.staff.index')->with('success', 'Staff member updated');
+        return to_route('admin.staff.edit', $staff)->with('success', 'Staff member updated');
     }
 
     public function toggle(Request $request, Admin $staff): RedirectResponse

@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'price', 'compare_price', 'cost_price', 'sku', 'barcode', 'stock', 'low_stock', 'weight',
     'track_inventory', 'status', 'is_featured', 'is_new', 'is_cod',
     'is_free_delivery', 'is_returnable', 'tags', 'meta_title', 'meta_description', 'meta_keywords', 'sold_count',
+    'front_image', 'back_image',
 ])]
 class Product extends Model
 {
@@ -107,11 +108,34 @@ class Product extends Model
         return url('/product/'.$this->slug);
     }
 
+    /** The main image shown everywhere: the front image, else the first gallery image. */
     public function getCoverUrlAttribute(): string
     {
+        if ($this->front_image) {
+            return asset($this->front_image);
+        }
+
         $image = $this->relationLoaded('images') ? $this->images->first() : $this->images()->first();
 
         return $image ? $image->url : asset('assets/frontend/images/placeholder.svg');
+    }
+
+    /** Front view: same as the cover image. */
+    public function getFrontImageUrlAttribute(): string
+    {
+        return $this->cover_url;
+    }
+
+    /** Back view: the dedicated back image, else the second gallery image, else none. */
+    public function getBackImageUrlAttribute(): ?string
+    {
+        if ($this->back_image) {
+            return asset($this->back_image);
+        }
+
+        $images = $this->relationLoaded('images') ? $this->images : $this->images()->get();
+
+        return $images->get(1)?->url;
     }
 
     /** Total sellable stock: sum of variants if there are any, else the product stock. */

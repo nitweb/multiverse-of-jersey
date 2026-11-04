@@ -55,7 +55,7 @@ class FlashDealController extends Controller
             $this->syncItems($flashDeal, $request->input('products', []));
         });
 
-        return to_route('admin.flash-deals.index')->with('success', 'Flash deal updated');
+        return to_route('admin.flash-deals.edit', $flashDeal)->with('success', 'Flash deal updated');
     }
 
     public function toggle(FlashDeal $flashDeal): RedirectResponse
