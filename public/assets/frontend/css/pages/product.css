@@ -1,22 +1,17 @@
-/* NEBULA MART — product page */
-
-/* former inline styles */
-.u-93e37d {
-    width: 72%
-}
-
-.u-100829 {
-    width: 20%
-}
-
-.u-0aad7a {
-    width: 5%
-}
-
-.u-c40096 {
-    width: 2%
-}
-
-.u-f162d0 {
-    width: 1%
-}
+/* Product page */
+.gallery-main{position:relative;border-radius:24px;overflow:hidden;background:rgb(var(--color-bg));border:1px solid rgb(var(--color-line));aspect-ratio:1/1}
+.gallery-main img{width:100%;height:100%;object-fit:cover}
+.thumb{border-radius:14px;overflow:hidden;border:2px solid rgb(var(--color-line));aspect-ratio:1/1;background:rgb(var(--color-bg));transition:.15s}.thumb img{width:100%;height:100%;object-fit:cover}
+.thumb:hover{border-color:rgb(var(--color-primary)/.5)}.thumb.is-active{border-color:rgb(var(--color-primary))}
+.wish-big[aria-pressed=true]{color:rgb(var(--color-accent));border-color:rgb(var(--color-accent))}.wish-big[aria-pressed=true] svg{fill:currentColor}
+.tab-list{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid rgb(var(--color-line));margin-bottom:20px}
+.tab{padding:14px 18px;font-weight:700;font-size:14px;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-1px;color:rgb(var(--color-ink)/.55)}
+.tab:hover{color:rgb(var(--color-ink))}.tab.is-active{color:rgb(var(--color-primary));border-color:rgb(var(--color-primary))}
+.tab-panel[hidden]{display:none}
+.buy-bar{position:fixed;left:0;right:0;bottom:0;z-index:45;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:rgb(var(--color-surface));border-top:1px solid rgb(var(--color-line));transform:translateY(110%);transition:transform .25s;box-shadow:0 -10px 30px -12px rgb(0 0 0/.25)}
+.buy-bar.show{transform:none}
+@media(min-width:1024px){.buy-bar{display:none}}
+@media(max-width:1023px){.chat{bottom:84px}.to-top{bottom:152px}}
+.custom .chk small{margin-left:0;color:inherit}
+.bg-accent-soft{background:rgb(var(--color-accent-soft))}
+.custom .chk b.text-primary{white-space:nowrap}

@@ -1,0 +1,7 @@
+/* Account, orders */
+.acc-nav{display:grid;gap:2px}
+.acc-link{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;font-weight:600;font-size:14px;color:rgb(var(--color-ink)/.75)}
+.acc-link:hover{background:rgb(var(--color-primary-soft));color:rgb(var(--color-primary))}.acc-link.is-active{background:rgb(var(--color-primary));color:rgb(var(--color-on-primary))}
+.order-row summary{display:flex;align-items:center;gap:12px;padding:18px 20px;cursor:pointer;list-style:none}.order-row summary::-webkit-details-marker{display:none}
+.order-row .chev{transition:transform .2s;color:rgb(var(--color-ink)/.4)}.order-row[open] .chev{transform:rotate(180deg)}
+.bg-success\/10,.bg-danger\/10,.bg-info\/10{}

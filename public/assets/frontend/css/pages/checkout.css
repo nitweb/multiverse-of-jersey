@@ -1,136 +1,21 @@
-/* NEBULA MART — checkout page */
-#district-list {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 100%;
-    margin-top: 4px;
-    z-index: 40;
-    max-height: 240px;
-    overflow-y: auto;
-    background: #fff;
-    border: 1px solid rgb(var(--color-line));
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
-    padding: 4px
-}
-
-#area-list {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 100%;
-    margin-top: 4px;
-    z-index: 40;
-    max-height: 240px;
-    overflow-y: auto;
-    background: #fff;
-    border: 1px solid rgb(var(--color-line));
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
-    padding: 4px
-}
-
-#district-list[hidden] {
-    display: none
-}
-
-#area-list[hidden] {
-    display: none
-}
-
-#district-list li {
-    padding: 9px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    display: flex;
-    justify-content: space-between;
-    gap: 8px
-}
-
-#area-list li {
-    padding: 9px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    display: flex;
-    justify-content: space-between;
-    gap: 8px
-}
-
-#district-list li small {
-    font-weight: 500;
-    opacity: .55
-}
-
-#area-list li small {
-    font-weight: 500;
-    opacity: .55
-}
-
-#district-list li.on,
-#district-list li:hover {
-    background: rgb(var(--color-primary-soft))
-}
-
-#area-list li.on,
-#area-list li:hover {
-    background: rgb(var(--color-primary-soft))
-}
-
-#district-list li.none {
-    cursor: default;
-    opacity: .6
-}
-
-#area-list li.none {
-    cursor: default;
-    opacity: .6
-}
-
-#mini li {
-    align-items: flex-start
-}
-
-#mini .mi-price {
-    white-space: nowrap;
-    flex-shrink: 0;
-    text-align: right;
-    line-height: 1.375
-}
-
-/* former inline styles */
-.u-ef28f7 {
-    background: rgb(var(--color-accent))
-}
-
-.u-85842e {
-    background: #E2136E
-}
-
-.u-435193 {
-    background: #F6921E
-}
-
-.u-e00e87 {
-    background: rgb(var(--color-primary))
-}
-
-.u-1126c2 {
-    background: rgb(var(--color-ink))
-}
-
-.u-7aeab9 {
-    background: #E2136E1A
-}
-
-.u-b12d5f {
-    background: #F6921E1A
-}
-
-.u-cdfbc3 {
-    padding: 10px 10px 2px 0
-}
+/* Checkout, order success, track order */
+.steps{display:flex;gap:8px;margin-top:20px;flex-wrap:wrap;font-size:13px;font-weight:600;color:rgb(var(--color-ink)/.5)}
+.steps li{display:flex;align-items:center;gap:8px;padding-right:12px}
+.steps li span{width:26px;height:26px;border-radius:50%;border:1.5px solid rgb(var(--color-line));display:grid;place-items:center;font-size:12px}
+.steps li.done,.steps li.current{color:rgb(var(--color-ink))}.steps li.done span{background:rgb(var(--color-primary));border-color:rgb(var(--color-primary));color:rgb(var(--color-on-primary))}.steps li.current span{border-color:rgb(var(--color-primary));color:rgb(var(--color-primary))}
+.co-h{display:flex;align-items:center;gap:12px;font-family:var(--font-display);font-weight:800;font-size:18px}
+.co-h span{width:30px;height:30px;border-radius:10px;background:rgb(var(--color-primary-soft));color:rgb(var(--color-primary));display:grid;place-items:center;font-size:14px}
+.opt{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid rgb(var(--color-line));border-radius:14px;cursor:pointer;transition:.15s;background:rgb(var(--color-surface))}
+.opt:hover{border-color:rgb(var(--color-primary)/.5)}.opt.is-on,.opt:has(input:checked){border-color:rgb(var(--color-primary));background:rgb(var(--color-primary-soft))}
+.opt.is-off{opacity:.55;cursor:not-allowed}.opt input{accent-color:rgb(var(--color-primary));width:18px;height:18px;flex-shrink:0}
+.opt-t{flex:1;display:flex;flex-direction:column;min-width:0}.opt-t small{color:rgb(var(--color-ink)/.55);font-size:12.5px}
+.success-ic{width:88px;height:88px;border-radius:50%;margin:auto;display:grid;place-items:center;background:rgb(var(--color-success)/.12);color:rgb(var(--color-success));animation:pop .5s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(.4);opacity:0}}
+.timeline{position:relative;display:grid;gap:26px}
+.timeline li{position:relative;display:flex;gap:16px;align-items:flex-start;color:rgb(var(--color-ink)/.5)}
+.timeline li:not(:last-child)::after{content:"";position:absolute;left:13px;top:30px;bottom:-24px;width:2px;background:rgb(var(--color-line))}
+.timeline li.done:not(:last-child)::after{background:rgb(var(--color-primary))}
+.timeline .dot{width:28px;height:28px;border-radius:50%;border:2px solid rgb(var(--color-line));display:grid;place-items:center;background:rgb(var(--color-surface));flex-shrink:0}
+.timeline li.done .dot{background:rgb(var(--color-primary));border-color:rgb(var(--color-primary));color:rgb(var(--color-on-primary))}
+.timeline li.current .dot{border-color:rgb(var(--color-primary));box-shadow:0 0 0 5px rgb(var(--color-primary)/.18)}
+.timeline li.done,.timeline li.current{color:rgb(var(--color-ink))}.timeline small{display:block;font-size:12.5px;color:rgb(var(--color-ink)/.5)}

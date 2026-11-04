@@ -33,7 +33,7 @@ class HomeController extends Controller
 
         $flashDeal = FlashDeal::live()->firstWhere('show_on_home', true);
 
-        return view('frontend.dashboard.index', [
+        return view('frontend.index', [
             'banners' => Banner::active()->get(),
             'homeCategories' => $homeCategories,
             'homeBrands' => Brand::active()->featured()->get(),
