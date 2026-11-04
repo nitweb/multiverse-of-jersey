@@ -1,145 +1,50 @@
-/* NEBULA MART — checkout page (district/area picker, live delivery charge, order summary) */
-document.addEventListener('DOMContentLoaded', function () {
-    var form = document.getElementById('co');
-    var cfg = window.NEBULA_CART;
-    if (!form || !cfg) return; // not the checkout page
-    var BD = { 'Dhaka': ['Dhaka', 'Gazipur', 'Narayanganj', 'Narsingdi', 'Manikganj', 'Munshiganj', 'Tangail', 'Kishoreganj', 'Faridpur', 'Gopalganj', 'Madaripur', 'Rajbari', 'Shariatpur'], 'Chattogram': ['Chattogram', "Cox's Bazar", 'Cumilla', 'Feni', 'Brahmanbaria', 'Noakhali', 'Lakshmipur', 'Chandpur', 'Rangamati', 'Bandarban', 'Khagrachhari'], 'Rajshahi': ['Rajshahi', 'Bogura', 'Pabna', 'Sirajganj', 'Natore', 'Naogaon', 'Chapainawabganj', 'Joypurhat'], 'Khulna': ['Khulna', 'Jashore', 'Satkhira', 'Bagerhat', 'Kushtia', 'Jhenaidah', 'Magura', 'Narail', 'Chuadanga', 'Meherpur'], 'Barishal': ['Barishal', 'Bhola', 'Patuakhali', 'Pirojpur', 'Jhalokathi', 'Barguna'], 'Sylhet': ['Sylhet', 'Moulvibazar', 'Habiganj', 'Sunamganj'], 'Rangpur': ['Rangpur', 'Dinajpur', 'Gaibandha', 'Kurigram', 'Lalmonirhat', 'Nilphamari', 'Panchagarh', 'Thakurgaon'], 'Mymensingh': ['Mymensingh', 'Jamalpur', 'Netrokona', 'Sherpur'] };
-    var TH = { "Dhaka": ["Dhanmondi", "Gulshan", "Banani", "Mirpur", "Uttara", "Mohammadpur", "Motijheel", "Tejgaon", "Badda", "Rampura", "Khilgaon", "Jatrabari", "Malibagh", "Shyamoli", "Farmgate", "Old Dhaka", "Demra", "Lalbagh", "Kotwali", "Sutrapur", "Pallabi", "Kafrul", "Cantonment", "Shahbagh", "Ramna", "Paltan", "Hazaribagh", "Sabujbagh", "Khilkhet", "Bhatara", "Adabor", "Bangshal", "Chawkbazar", "Gendaria", "Wari", "Savar", "Keraniganj", "Dhamrai", "Nawabganj", "Dohar"], "Gazipur": ["Gazipur Sadar", "Kaliakair", "Kaliganj", "Kapasia", "Sreepur", "Tongi"], "Narayanganj": ["Narayanganj Sadar", "Araihazar", "Bandar", "Rupganj", "Sonargaon", "Fatullah", "Siddhirganj"], "Narsingdi": ["Narsingdi Sadar", "Belabo", "Monohardi", "Palash", "Raipura", "Shibpur"], "Manikganj": ["Manikganj Sadar", "Daulatpur", "Ghior", "Harirampur", "Saturia", "Shivalaya", "Singair"], "Munshiganj": ["Munshiganj Sadar", "Gazaria", "Lohajang", "Sirajdikhan", "Sreenagar", "Tongibari"], "Tangail": ["Tangail Sadar", "Basail", "Bhuapur", "Delduar", "Dhanbari", "Ghatail", "Gopalpur", "Kalihati", "Madhupur", "Mirzapur", "Nagarpur", "Sakhipur"], "Kishoreganj": ["Kishoreganj Sadar", "Austagram", "Bajitpur", "Bhairab", "Hossainpur", "Itna", "Karimganj", "Katiadi", "Kuliarchar", "Mithamain", "Nikli", "Pakundia", "Tarail"], "Faridpur": ["Faridpur Sadar", "Alfadanga", "Bhanga", "Boalmari", "Charbhadrasan", "Madhukhali", "Nagarkanda", "Sadarpur", "Saltha"], "Gopalganj": ["Gopalganj Sadar", "Kashiani", "Kotalipara", "Muksudpur", "Tungipara"], "Madaripur": ["Madaripur Sadar", "Kalkini", "Rajoir", "Shibchar"], "Rajbari": ["Rajbari Sadar", "Baliakandi", "Goalanda", "Kalukhali", "Pangsha"], "Shariatpur": ["Shariatpur Sadar", "Bhedarganj", "Damudya", "Gosairhat", "Naria", "Zajira"], "Chattogram": ["Kotwali", "Pahartali", "Panchlaish", "Khulshi", "Double Mooring", "Bayazid", "Halishahar", "Chandgaon", "Bakalia", "Patenga", "Anwara", "Banshkhali", "Boalkhali", "Chandanaish", "Fatikchhari", "Hathazari", "Lohagara", "Mirsharai", "Patiya", "Rangunia", "Raozan", "Sandwip", "Satkania", "Sitakunda"], "Cox's Bazar": ["Cox's Bazar Sadar", "Chakaria", "Kutubdia", "Maheshkhali", "Pekua", "Ramu", "Teknaf", "Ukhia"], "Cumilla": ["Cumilla Sadar", "Cumilla Sadar Dakshin", "Barura", "Brahmanpara", "Burichang", "Chandina", "Chauddagram", "Daudkandi", "Debidwar", "Homna", "Laksam", "Meghna", "Monohorgonj", "Muradnagar", "Nangalkot", "Titas"], "Feni": ["Feni Sadar", "Chhagalnaiya", "Daganbhuiyan", "Fulgazi", "Parshuram", "Sonagazi"], "Brahmanbaria": ["Brahmanbaria Sadar", "Akhaura", "Ashuganj", "Bancharampur", "Bijoynagar", "Kasba", "Nabinagar", "Nasirnagar", "Sarail"], "Noakhali": ["Noakhali Sadar", "Begumganj", "Chatkhil", "Companiganj", "Hatiya", "Kabirhat", "Senbagh", "Sonaimuri", "Subarnachar"], "Lakshmipur": ["Lakshmipur Sadar", "Kamalnagar", "Raipur", "Ramganj", "Ramgati"], "Chandpur": ["Chandpur Sadar", "Faridganj", "Haimchar", "Haziganj", "Kachua", "Matlab Dakshin", "Matlab Uttar", "Shahrasti"], "Rangamati": ["Rangamati Sadar", "Baghaichhari", "Barkal", "Belaichhari", "Juraichhari", "Kaptai", "Kawkhali", "Langadu", "Naniarchar", "Rajasthali"], "Bandarban": ["Bandarban Sadar", "Alikadam", "Lama", "Naikhongchhari", "Rowangchhari", "Ruma", "Thanchi"], "Khagrachhari": ["Khagrachhari Sadar", "Dighinala", "Lakshmichhari", "Mahalchhari", "Manikchhari", "Matiranga", "Panchhari", "Ramgarh"], "Rajshahi": ["Boalia", "Motihar", "Rajpara", "Shah Makhdum", "Bagha", "Bagmara", "Charghat", "Durgapur", "Godagari", "Mohanpur", "Paba", "Puthia", "Tanore"], "Bogura": ["Bogura Sadar", "Adamdighi", "Dhunat", "Dhupchanchia", "Gabtali", "Kahaloo", "Nandigram", "Sariakandi", "Shajahanpur", "Sherpur", "Shibganj", "Sonatala"], "Pabna": ["Pabna Sadar", "Atgharia", "Bera", "Bhangura", "Chatmohar", "Faridpur", "Ishwardi", "Santhia", "Sujanagar"], "Sirajganj": ["Sirajganj Sadar", "Belkuchi", "Chauhali", "Kamarkhanda", "Kazipur", "Raiganj", "Shahjadpur", "Tarash", "Ullapara"], "Natore": ["Natore Sadar", "Bagatipara", "Baraigram", "Gurudaspur", "Lalpur", "Singra", "Naldanga"], "Naogaon": ["Naogaon Sadar", "Atrai", "Badalgachhi", "Dhamoirhat", "Manda", "Mahadebpur", "Niamatpur", "Patnitala", "Porsha", "Raninagar", "Sapahar"], "Chapainawabganj": ["Chapainawabganj Sadar", "Bholahat", "Gomastapur", "Nachole", "Shibganj"], "Joypurhat": ["Joypurhat Sadar", "Akkelpur", "Kalai", "Khetlal", "Panchbibi"], "Khulna": ["Khulna Sadar", "Sonadanga", "Khalishpur", "Daulatpur", "Khan Jahan Ali", "Batiaghata", "Dacope", "Dumuria", "Dighalia", "Koyra", "Paikgachha", "Phultala", "Rupsha", "Terokhada"], "Jashore": ["Jashore Sadar", "Abhaynagar", "Bagherpara", "Chaugachha", "Jhikargachha", "Keshabpur", "Manirampur", "Sharsha"], "Satkhira": ["Satkhira Sadar", "Assasuni", "Debhata", "Kalaroa", "Kaliganj", "Shyamnagar", "Tala"], "Bagerhat": ["Bagerhat Sadar", "Chitalmari", "Fakirhat", "Kachua", "Mollahat", "Mongla", "Morrelganj", "Rampal", "Sarankhola"], "Kushtia": ["Kushtia Sadar", "Bheramara", "Daulatpur", "Khoksa", "Kumarkhali", "Mirpur"], "Jhenaidah": ["Jhenaidah Sadar", "Harinakunda", "Kaliganj", "Kotchandpur", "Maheshpur", "Shailkupa"], "Magura": ["Magura Sadar", "Mohammadpur", "Shalikha", "Sreepur"], "Narail": ["Narail Sadar", "Kalia", "Lohagara"], "Chuadanga": ["Chuadanga Sadar", "Alamdanga", "Damurhuda", "Jibannagar"], "Meherpur": ["Meherpur Sadar", "Gangni", "Mujibnagar"], "Barishal": ["Barishal Sadar", "Agailjhara", "Babuganj", "Bakerganj", "Banaripara", "Gournadi", "Hizla", "Mehendiganj", "Muladi", "Wazirpur"], "Bhola": ["Bhola Sadar", "Borhanuddin", "Charfasson", "Daulatkhan", "Lalmohan", "Manpura", "Tazumuddin"], "Patuakhali": ["Patuakhali Sadar", "Bauphal", "Dashmina", "Dumki", "Galachipa", "Kalapara", "Mirzaganj", "Rangabali"], "Pirojpur": ["Pirojpur Sadar", "Bhandaria", "Kawkhali", "Mathbaria", "Nazirpur", "Nesarabad", "Zianagar"], "Jhalokathi": ["Jhalokathi Sadar", "Kathalia", "Nalchity", "Rajapur"], "Barguna": ["Barguna Sadar", "Amtali", "Bamna", "Betagi", "Patharghata", "Taltali"], "Sylhet": ["Sylhet Sadar", "Kotwali", "Jalalabad", "Balaganj", "Beanibazar", "Bishwanath", "Companiganj", "Dakshin Surma", "Fenchuganj", "Golapganj", "Gowainghat", "Jaintiapur", "Kanaighat", "Osmani Nagar", "Zakiganj"], "Moulvibazar": ["Moulvibazar Sadar", "Barlekha", "Juri", "Kamalganj", "Kulaura", "Rajnagar", "Sreemangal"], "Habiganj": ["Habiganj Sadar", "Ajmiriganj", "Bahubal", "Baniachong", "Chunarughat", "Lakhai", "Madhabpur", "Nabiganj", "Shayestaganj"], "Sunamganj": ["Sunamganj Sadar", "Bishwamvarpur", "Chhatak", "Dakshin Sunamganj", "Derai", "Dharampasha", "Dowarabazar", "Jagannathpur", "Jamalganj", "Sullah", "Tahirpur"], "Rangpur": ["Rangpur Sadar", "Badarganj", "Gangachara", "Kaunia", "Mithapukur", "Pirgachha", "Pirganj", "Taraganj"], "Dinajpur": ["Dinajpur Sadar", "Birampur", "Birganj", "Biral", "Bochaganj", "Chirirbandar", "Fulbari", "Ghoraghat", "Hakimpur", "Kaharole", "Khansama", "Nawabganj", "Parbatipur"], "Gaibandha": ["Gaibandha Sadar", "Fulchhari", "Gobindaganj", "Palashbari", "Sadullapur", "Saghata", "Sundarganj"], "Kurigram": ["Kurigram Sadar", "Bhurungamari", "Char Rajibpur", "Chilmari", "Phulbari", "Nageshwari", "Rajarhat", "Raomari", "Ulipur"], "Lalmonirhat": ["Lalmonirhat Sadar", "Aditmari", "Hatibandha", "Kaliganj", "Patgram"], "Nilphamari": ["Nilphamari Sadar", "Dimla", "Domar", "Jaldhaka", "Kishoreganj", "Saidpur"], "Panchagarh": ["Panchagarh Sadar", "Atwari", "Boda", "Debiganj", "Tetulia"], "Thakurgaon": ["Thakurgaon Sadar", "Baliadangi", "Haripur", "Pirganj", "Ranisankail"], "Mymensingh": ["Mymensingh Sadar", "Bhaluka", "Dhobaura", "Fulbaria", "Gaffargaon", "Gauripur", "Haluaghat", "Ishwarganj", "Muktagachha", "Nandail", "Phulpur", "Tarakanda", "Trishal"], "Jamalpur": ["Jamalpur Sadar", "Bakshiganj", "Dewanganj", "Islampur", "Madarganj", "Melandaha", "Sarishabari"], "Netrokona": ["Netrokona Sadar", "Atpara", "Barhatta", "Durgapur", "Kalmakanda", "Kendua", "Khaliajuri", "Madan", "Mohanganj", "Purbadhala"], "Sherpur": ["Sherpur Sadar", "Jhenaigati", "Nakla", "Nalitabari", "Sreebardi"] };
-    var NEAR = ['Gazipur', 'Narayanganj', 'Narsingdi', 'Munshiganj', 'Manikganj'];
-    var ALL = []; Object.keys(BD).forEach(function (d) { BD[d].forEach(function (x) { ALL.push({ n: x, d: d }) }) });
-    ALL.sort(function (a, b) { return a.n.localeCompare(b.n) });
+/* Checkout page: validation, division/district, delivery zone, place order */
+(function () {
+  'use strict';
+  var $ = function (s, c) { return (c || document).querySelector(s); }, $$ = function (s, c) { return [].slice.call((c || document).querySelectorAll(s)); };
+  var form = $('#checkout-form'); if (!form) return;
+  var NEARBY = ['Gazipur', 'Narayanganj', 'Narsingdi', 'Munshiganj', 'Manikganj'];
 
-    var $ = function (i) { return document.getElementById(i) };
-    var tokenMeta = document.querySelector('meta[name="csrf-token"]');
-    var token = tokenMeta ? tokenMeta.getAttribute('content') : '';
-    var cart = cfg.initial;
-    var dt = $('district'), at = $('area-txt'), ls = $('district-list'), idx = -1, shown = [];
-    var zoneError = '';
+  function toggle() { var has = JBD.cart.count() > 0; $('#co-empty').hidden = has; $('#co-filled').hidden = !has; }
+  toggle(); document.addEventListener('cart:change', toggle);
 
-    function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] }) }
-    function tk(n) { n = Number(n) || 0; var whole = Math.round(n * 100) % 100 === 0; return '৳' + n.toLocaleString('en-US', { minimumFractionDigits: whole ? 0 : 2, maximumFractionDigits: whole ? 0 : 2 }) }
-    function find(v) { v = (v || '').trim().toLowerCase(); return ALL.filter(function (x) { return x.n.toLowerCase() === v })[0] || null }
-    function zoneKey() { var m = find(dt.value); if (!m) return null; if (m.n === 'Dhaka') return 'inside_dhaka'; return NEAR.indexOf(m.n) >= 0 ? 'nearby_dhaka' : 'outside_dhaka' }
+  var div = form.division, dist = form.district;
+  Object.keys(BD_LOC).forEach(function (d) { div.add(new Option(d, d)); });
+  div.addEventListener('change', function () {
+    dist.length = 1; dist.disabled = !div.value; (BD_LOC[div.value] || []).forEach(function (d) { dist.add(new Option(d, d)); });
+  });
+  function zoneFor(d) { return d === 'Dhaka' ? 'inside' : NEARBY.indexOf(d) > -1 ? 'nearby' : 'outside'; }
+  dist.addEventListener('change', function () { if (!dist.value) return; var z = $('input[name=zone][value=' + zoneFor(dist.value) + ']', form); z.checked = true; pick(); });
 
-    /* ---------- order summary ---------- */
-    function money(c) {
-        var s = c.shipping;
-        $('mini').innerHTML = c.items.map(function (i) {
-            return '<li class="flex gap-3"><span class="relative shrink-0"><img src="' + esc(i.image) + '" alt="" width="300" height="300" class="w-14 h-14 rounded-lg object-cover border border-line"><span class="absolute -top-2 -right-2 min-w-5 h-5 px-1 rounded-full bg-ink text-white text-xs font-bold grid place-items-center">' + i.quantity + '</span></span><span class="flex-1 min-w-0 text-sm font-bold leading-snug">' + esc(i.name) + (i.variant ? '<span class="block text-xs font-medium text-ink/60">' + esc(i.variant) + '</span>' : '') + '</span><span class="mi-price font-bold text-sm">' + tk(i.line_total) + '</span></li>';
-        }).join('');
-        $('t-sub').textContent = tk(c.subtotal);
-        var cin = $('co-coupon'), cbtn = $('co-apply'), locked = !!c.coupon;
-        if (cin && cbtn) {
-            if (locked) {
-                cin.value = c.coupon.code;
-                $('co-cmsg').innerHTML = '<span class="text-success font-bold">' + esc(c.coupon.code) + ' applied: ' + esc(c.coupon.label) + '.</span>';
-            }
-            cin.readOnly = locked;
-            cbtn.disabled = locked;
-        }
-        $('r-disc').hidden = !c.coupon || (!c.discount && !c.coupon.free_delivery);
-        $('r-disc-label').textContent = c.coupon ? 'Coupon ' + c.coupon.code : 'Coupon';
-        $('t-disc').textContent = c.coupon && c.coupon.free_delivery ? 'Free delivery' : '-' + tk(c.discount);
-        $('t-fee').textContent = s.free ? 'Free' : tk(s.fee);
-        $('t-zone').textContent = '(' + s.label + ')';
-        $('t-total').textContent = tk(c.total);
-        document.querySelectorAll('.pay-amt').forEach(function (e) { e.textContent = tk(c.total) });
-        if (zoneError) $('zone-msg').textContent = zoneError;
-        else if (zoneKey()) $('zone-msg').textContent = s.label + ' delivery: ' + (s.free ? 'Free' : tk(s.fee)) + (s.time ? ', arrives in ' + s.time : '') + '.';
-        else $('zone-msg').textContent = 'Select your district to see the delivery charge.';
-    }
+  function pick() {
+    $$('.opt', form).forEach(function (o) { var i = $('input', o); o.classList.toggle('is-on', i.checked); });
+    JBD.summary.ship = +$('input[name=zone]:checked', form).dataset.charge; JBD.summary.render();
+  }
+  form.addEventListener('change', function (e) { if (e.target.name === 'zone' || e.target.name === 'payment') pick(); });
+  pick();
 
-    /* The server owns the delivery fee: tell it the zone and show what it sends back. */
-    function syncZone() {
-        var z = zoneKey();
-        zoneError = '';
-        if (!z || z === cart.shipping.zone) { dt.setCustomValidity(valMsg()); money(cart); return }
-        fetch(cfg.routes.zone, {
-            method: 'PUT',
-            credentials: 'same-origin',
-            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token, 'X-Requested-With': 'XMLHttpRequest' },
-            body: JSON.stringify({ zone: z })
-        }).then(function (res) {
-            return res.json().catch(function () { return {} }).then(function (data) {
-                if (data.cart) cart = data.cart;
-                if (!res.ok) { zoneError = data.message || 'We cannot deliver to this area right now.'; dt.setCustomValidity(zoneError) }
-                else dt.setCustomValidity(valMsg());
-                money(cart);
-            });
-        }).catch(function () { zoneError = 'Network problem. Please check your connection.'; money(cart) });
-    }
+  function err(n, m) { var e = $('[data-err=' + n + ']', form), i = form.elements[n]; if (e) e.textContent = m || ''; if (i && i.classList) i.classList.toggle('invalid', !!m); return !m; }
+  function validate() {
+    var ok = true, v = function (n, m) { if (!err(n, m)) ok = false; };
+    var f = form.elements;
+    v('name', f.name.value.trim().length < 3 ? 'Please enter your full name.' : '');
+    v('phone', /^(?:\+?88)?01[3-9]\d{8}$/.test(f.phone.value.replace(/[\s-]/g, '')) ? '' : 'Enter a valid Bangladeshi mobile number.');
+    v('email', f.email.value && !/^\S+@\S+\.\S+$/.test(f.email.value) ? 'Enter a valid email address.' : '');
+    v('division', f.division.value ? '' : 'Select your division.'); v('district', f.district.value ? '' : 'Select your district.');
+    v('thana', f.thana.value.trim() ? '' : 'Enter your thana / area.'); v('address', f.address.value.trim().length < 6 ? 'Enter your full address.' : '');
+    v('terms', f.terms.checked ? '' : 'Please accept the terms to continue.');
+    return ok;
+  }
+  $$('.input', form).forEach(function (i) { i.addEventListener('input', function () { if (i.classList.contains('invalid')) validate(); }); });
 
-    /* ---------- coupon ---------- */
-    function applyCoupon() {
-        var cin = $('co-coupon'), msg = $('co-cmsg'), code = cin.value.trim();
-        if (cin.readOnly) return;
-        if (!code) { msg.innerHTML = '<span class="text-danger font-bold">Enter a coupon code.</span>'; return }
-        $('co-apply').disabled = true;
-        fetch(cfg.routes.coupon, {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token, 'X-Requested-With': 'XMLHttpRequest' },
-            body: JSON.stringify({ code: code })
-        }).then(function (res) {
-            return res.json().catch(function () { return {} }).then(function (data) {
-                if (data.cart) cart = data.cart;
-                if (!res.ok) { msg.innerHTML = '<span class="text-danger font-bold">' + esc(data.message || 'This coupon cannot be applied.') + '</span>'; $('co-apply').disabled = false }
-                money(cart);
-            });
-        }).catch(function () { msg.innerHTML = '<span class="text-danger font-bold">Network problem. Please check your connection.</span>'; $('co-apply').disabled = false });
-    }
-    if ($('co-apply')) {
-        $('co-apply').addEventListener('click', applyCoupon);
-        $('co-coupon').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); applyCoupon() } });
-    }
-
-    /* ---------- district picker ---------- */
-    var lastD = '', AREAS = [], firstRun = true;
-    function areas() {
-        var m = find(dt.value), n = m ? m.n : '';
-        if (n === lastD) return;
-        lastD = n;
-        if (!firstRun) at.value = '';
-        AREAS = n ? (TH[n] || []) : [];
-        at.disabled = !n;
-        at.placeholder = n ? 'Select or type thana / upazila' : 'Select district first';
-    }
-    function upd() { areas(); firstRun = false; syncZone() }
-    function render(q) {
-        q = (q || '').trim().toLowerCase(); shown = ALL.filter(function (x) { return !q || x.n.toLowerCase().indexOf(q) >= 0 }); idx = shown.length ? 0 : -1;
-        ls.innerHTML = shown.length ? shown.map(function (x, i) { return '<li role="option" data-i="' + i + '"' + (i === 0 ? ' class="on"' : '') + '>' + esc(x.n) + '<small>' + esc(x.d) + '</small></li>' }).join('') : '<li class="none">No district found</li>'
-    }
-    function open_() { render(dt.dataset.q); ls.hidden = false; dt.setAttribute('aria-expanded', 'true') }
-    function close_() { ls.hidden = true; dt.setAttribute('aria-expanded', 'false') }
-    function pick(i) { var x = shown[i]; if (!x) return; dt.value = x.n; dt.dataset.q = ''; close_(); upd() }
-    function valMsg() { return dt.value && !find(dt.value) ? 'Please select a district from the list' : '' }
-    function hi() { var l = ls.querySelectorAll('li'); l.forEach(function (e, i) { e.classList.toggle('on', i === idx) }); if (l[idx]) l[idx].scrollIntoView({ block: 'nearest' }) }
-    dt.addEventListener('focus', function () { dt.dataset.q = ''; open_(); dt.select() });
-    dt.addEventListener('input', function () { dt.dataset.q = dt.value; render(dt.value); ls.hidden = false; upd() });
-    dt.addEventListener('keydown', function (e) { if (e.key === 'ArrowDown') { e.preventDefault(); if (ls.hidden) open_(); else { idx = Math.min(idx + 1, shown.length - 1); hi() } } else if (e.key === 'ArrowUp') { e.preventDefault(); idx = Math.max(idx - 1, 0); hi() } else if (e.key === 'Enter' && !ls.hidden) { e.preventDefault(); pick(idx) } else if (e.key === 'Escape' || e.key === 'Tab') { close_() } });
-    ls.addEventListener('mousedown', function (e) { var li = e.target.closest('li[data-i]'); if (li) { e.preventDefault(); pick(+li.dataset.i) } });
-    document.addEventListener('click', function (e) { if (!e.target.closest('#district,#district-list')) close_() });
-    dt.addEventListener('blur', function () { setTimeout(function () { var m = find(dt.value); if (m) dt.value = m.n; close_(); upd() }, 120) });
-
-    /* ---------- area / thana picker ---------- */
-    var al = $('area-list'), ai = -1, ash = [];
-    function arender(q) { q = (q || '').trim().toLowerCase(); ash = AREAS.filter(function (x) { return !q || x.toLowerCase().indexOf(q) >= 0 }); ai = ash.length ? 0 : -1; al.innerHTML = ash.map(function (x, i) { return '<li role="option" data-i="' + i + '"' + (i === 0 ? ' class="on"' : '') + '>' + esc(x) + '</li>' }).join(''); al.hidden = !ash.length }
-    function aclose() { al.hidden = true }
-    function apick(i) { if (ash[i] == null) return; at.value = ash[i]; aclose() }
-    function ahi() { var l = al.querySelectorAll('li'); l.forEach(function (e, i) { e.classList.toggle('on', i === ai) }); if (l[ai]) l[ai].scrollIntoView({ block: 'nearest' }) }
-    at.addEventListener('focus', function () { if (!at.disabled) { arender(''); at.select() } });
-    at.addEventListener('input', function () { arender(at.value) });
-    at.addEventListener('keydown', function (e) { if (e.key === 'ArrowDown') { e.preventDefault(); if (al.hidden) arender(''); else { ai = Math.min(ai + 1, ash.length - 1); ahi() } } else if (e.key === 'ArrowUp') { e.preventDefault(); ai = Math.max(ai - 1, 0); ahi() } else if (e.key === 'Enter' && !al.hidden) { e.preventDefault(); apick(ai) } else if (e.key === 'Escape' || e.key === 'Tab') { aclose() } });
-    al.addEventListener('mousedown', function (e) { var li = e.target.closest('li[data-i]'); if (li) { e.preventDefault(); apick(+li.dataset.i) } });
-    at.addEventListener('blur', function () { setTimeout(aclose, 120) });
-
-    /* ---------- submit ---------- */
-    form.addEventListener('submit', function (e) {
-        dt.setCustomValidity(zoneError || valMsg());
-        if (!form.reportValidity()) { e.preventDefault(); return }
-        var btn = $('place-order');
-        if (btn) { btn.disabled = true; btn.style.opacity = '.6'; btn.textContent = 'Placing order…' }
-    });
-
-    upd();
-});
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (JBD.cart.subtotal() < JBD.cfg.minOrder) return JBD.toast('Minimum order is ' + JBD.fmt(JBD.cfg.minOrder), 'error');
+    if (!validate()) { var bad = $('.invalid', form) || $('.err:not(:empty)', form); if (bad) bad.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+    var f = form.elements, sub = JBD.cart.subtotal(), d = JBD.summary.discount(sub), zone = $('input[name=zone]:checked', form), ship = sub >= JBD.cfg.freeAbove ? 0 : +zone.dataset.charge;
+    var order = { number: 'MOJ-' + (10483 + Math.floor(Math.random() * 400)), items: JBD.cart.get(), subtotal: sub, discount: d, shipping: ship, total: sub - d + ship, name: f.name.value, phone: f.phone.value,
+      address: [f.address.value, f.thana.value, f.district.value, f.division.value, f.postcode.value].filter(Boolean).join(', '), placed: new Date().toISOString() };
+    try { sessionStorage.setItem('jbd_last_order', JSON.stringify(order)); } catch (er) {}
+    JBD.write('jbd_coupon', null); JBD.cart.clear(); location.href = 'order-success.html';
+  });
+})();
