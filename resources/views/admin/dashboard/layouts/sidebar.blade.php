@@ -33,15 +33,6 @@
 
         <p class="nav-label">Catalog</p>
 
-        @if ($navAdmin->hasPermission('products:view'))
-        <a href="{{ route('admin.products.index') }}" class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
-            <svg class="ic ">
-                <use href="#i-box" />
-            </svg>
-            <span>Products</span>
-        </a>
-        @endif
-
         @if ($navAdmin->hasPermission('categories:view'))
         <a href="{{ route('admin.categories.index') }}" class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
             <svg class="ic ">
@@ -57,6 +48,15 @@
                 <use href="#i-award" />
             </svg>
             <span>Brands</span>
+        </a>
+        @endif
+
+        @if ($navAdmin->hasPermission('products:view'))
+        <a href="{{ route('admin.products.index') }}" class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+            <svg class="ic ">
+                <use href="#i-box" />
+            </svg>
+            <span>Products</span>
         </a>
         @endif
 

@@ -65,7 +65,7 @@ class BrandController extends Controller
 
         $brand->update($data);
 
-        return to_route('admin.brands.index')->with('success', 'Brand updated');
+        return to_route('admin.brands.edit', $brand)->with('success', 'Brand updated');
     }
 
     public function toggle(Brand $brand): RedirectResponse

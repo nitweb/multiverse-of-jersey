@@ -55,7 +55,7 @@ class ExpenseController extends Controller
     {
         $expense->update($request->validated());
 
-        return to_route('admin.expenses.index')->with('success', 'Expense updated');
+        return to_route('admin.expenses.edit', $expense)->with('success', 'Expense updated');
     }
 
     public function destroy(Expense $expense): RedirectResponse

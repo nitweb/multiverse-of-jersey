@@ -43,7 +43,7 @@ class RoleController extends Controller
 
         $role->update($this->payload($request));
 
-        return to_route('admin.roles.index')->with('success', 'Role updated');
+        return to_route('admin.roles.edit', $role)->with('success', 'Role updated');
     }
 
     public function destroy(Role $role): RedirectResponse

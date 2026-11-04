@@ -59,7 +59,7 @@ class BannerController extends Controller
 
         $banner->update($data);
 
-        return to_route('admin.banners.index')->with('success', 'Banner updated');
+        return to_route('admin.banners.edit', $banner)->with('success', 'Banner updated');
     }
 
     public function destroy(Banner $banner): RedirectResponse

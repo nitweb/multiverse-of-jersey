@@ -86,7 +86,7 @@ class CategoryController extends Controller
 
         $category->update($data);
 
-        return to_route('admin.categories.index')->with('success', 'Category updated');
+        return to_route('admin.categories.edit', $category)->with('success', 'Category updated');
     }
 
     public function toggle(Category $category): RedirectResponse
