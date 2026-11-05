@@ -126,6 +126,15 @@
         </a>
         @endif
 
+        @if ($navAdmin->hasPermission('promos:view'))
+        <a href="{{ route('admin.promos.edit') }}" class="nav-link {{ request()->routeIs('admin.promos.*') ? 'active' : '' }}">
+            <svg class="ic ">
+                <use href="#i-image" />
+            </svg>
+            <span>Promos</span>
+        </a>
+        @endif
+
         @if ($navAdmin->hasPermission('pages:view'))
         <a href="{{ route('admin.about.edit') }}" class="nav-link {{ request()->routeIs('admin.about.*') ? 'active' : '' }}">
             <svg class="ic ">

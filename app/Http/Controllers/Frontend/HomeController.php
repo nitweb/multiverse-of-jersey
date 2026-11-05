@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
+use App\Models\Promo;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\FlashDeal;
@@ -49,6 +50,7 @@ class HomeController extends Controller
 
         return view('frontend.index', [
             'banners' => Banner::active()->get(),
+            'promos' => Promo::whereNotNull('image')->orderBy('slot')->get(),
             'homeCategories' => $homeCategories,
             'homeBrands' => Brand::active()->featured()->get(),
             'flashDeal' => $flashDeal,

@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\Auth\RegisteredUserController;
 use App\Http\Controllers\Admin\Auth\VerifyEmailController;
 use App\Http\Controllers\Admin\AboutController;
 use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\PromoController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CouponController;
@@ -87,6 +88,11 @@ Route::middleware('auth:admin')
         // Banner Routes
         Route::middleware('permission:banners')->group(function () {
             Route::resource('banners', BannerController::class)->except('show');
+        });
+        // Promo Routes
+        Route::middleware('permission:promos,singleton')->group(function () {
+            Route::get('promos', [PromoController::class, 'edit'])->name('promos.edit');
+            Route::put('promos', [PromoController::class, 'update'])->name('promos.update');
         });
         // Category Routes
         Route::middleware('permission:categories')->group(function () {
