@@ -41,6 +41,7 @@
     <link rel="stylesheet" href="{{ asset('assets/frontend/css/tailwind.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/frontend/css/common.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/frontend/css/pages/home.css') }}">
+    @stack('frontend_styles')
 </head>
 
 <body class="min-h-screen flex flex-col">
@@ -271,7 +272,7 @@
 
     <div id="quick-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="qm-title">
         <div class="modal-box">
-            <button type="button" class="icon-btn absolute top-3 right-3" data-modal-close aria-label="Close">
+            <button type="button" class="icon-btn" style="position: absolute; top: 12px; right: 12px" data-modal-close aria-label="Close">
                 <svg class="ic " aria-hidden="true">
                     <use href="#i-x" />
                 </svg>
@@ -335,6 +336,7 @@
 
     <script src="{{ asset('assets/frontend/js/common.js') }}" defer></script>
     <script src="{{ asset('assets/frontend/js/pages/home.js') }}" defer></script>
+    @stack('frontend_scripts')
 
 </body>
 

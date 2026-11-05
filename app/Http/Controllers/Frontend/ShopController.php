@@ -49,6 +49,8 @@ class ShopController extends Controller
 
         $products = $scope()
             ->with(['images', 'variants', 'category', 'brand'])
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rating')
             ->when($search !== '', fn (Builder $q) => $q->matchingName($search))
             ->when($brands, fn (Builder $q) => $q->whereHas('brand', fn (Builder $b) => $b->whereIn('slug', $brands)))
             ->when($colors || $sizes, fn (Builder $q) => $q->whereHas('variants', function (Builder $v) use ($colors, $sizes) {

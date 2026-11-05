@@ -40,12 +40,9 @@
             <div>
                 <h4>Collections</h4>
                 <ul>
-                    <li><a href="shop.html?cat=premier-league">Premier League</a></li>
-                    <li><a href="shop.html?cat=la-liga">La Liga</a></li>
-                    <li><a href="shop.html?cat=serie-a">Serie A</a></li>
-                    <li><a href="shop.html?cat=retro">Retro</a></li>
-                    <li><a href="shop.html?cat=player-edition">Player Edition</a></li>
-                    <li><a href="shop.html?cat=national-teams">National Teams</a></li>
+                    @foreach ($menuCategories->take(6) as $menuCategory)
+                        <li><a href="{{ $menuCategory->url }}">{{ $menuCategory->name }}</a></li>
+                    @endforeach
                 </ul>
             </div>
 

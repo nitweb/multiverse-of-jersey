@@ -28,7 +28,7 @@
 
             <div class="has-sub">
                 <div class="flex items-center">
-                    <a href="shop.html" class="nav-link flex-1">
+                    <a href="{{ route('shop') }}" class="nav-link flex-1">
                         Shop
                         <svg class="ic nav-chev" aria-hidden="true">
                             <use href="#i-chev-down" />
@@ -41,13 +41,10 @@
                     </button>
                 </div>
                 <div class="sub">
-                    <a href="shop.html">All jerseys</a>
-                    <a href="shop.html?cat=premier-league">Premier League</a>
-                    <a href="shop.html?cat=la-liga">La Liga</a>
-                    <a href="shop.html?cat=serie-a">Serie A</a>
-                    <a href="shop.html?cat=retro">Retro</a>
-                    <a href="shop.html?cat=player-edition">Player Edition</a>
-                    <a href="shop.html?cat=national-teams">National Teams</a>
+                    <a href="{{ route('shop') }}">All products</a>
+                    @foreach ($menuCategories->take(8) as $menuCategory)
+                        <a href="{{ $menuCategory->url }}">{{ $menuCategory->name }}</a>
+                    @endforeach
                 </div>
             </div>
 
@@ -64,7 +61,7 @@
 
         </nav>
 
-        <form class="search order-last w-full lg:order-none lg:w-auto lg:flex-1 lg:max-w-md lg:ml-auto" action="shop.html" role="search">
+        <form class="search order-last w-full lg:order-none lg:w-auto lg:flex-1 lg:max-w-md lg:ml-auto" action="{{ route('search') }}" role="search">
             <svg class="ic ic-search" aria-hidden="true">
                 <use href="#i-search" />
             </svg>
