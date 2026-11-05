@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Address;
 use App\Models\Coupon;
-use App\Models\FlashDealProduct;
 use App\Models\Order;
 use App\Models\OrderEvent;
 use App\Models\Product;
@@ -341,38 +340,10 @@ class CheckoutService
                 }
             }
 
-            $this->takeFlashStock($product, $line);
-
             $product->increment('sold_count', $line['quantity']);
 
             AdminNotifier::lowStock($product);
         }
-    }
-
-    /** @param  array<string, mixed>  $line */
-    private function takeFlashStock(Product $product, array $line): void
-    {
-        if (! $line['is_flash']) {
-            return;
-        }
-
-        $deal = $product->flash_item;
-
-        if (! $deal || $deal->deal_stock === null) {
-            return;
-        }
-
-        $row = FlashDealProduct::query()->lockForUpdate()->find($deal->id);
-
-        if (! $row || $row->deal_stock === null) {
-            return;
-        }
-
-        if ($row->deal_stock < $line['quantity']) {
-            throw new DomainException("The flash deal for {$line['name']} just sold out. Please review your cart.");
-        }
-
-        $row->decrement('deal_stock', $line['quantity']);
     }
 
     /**

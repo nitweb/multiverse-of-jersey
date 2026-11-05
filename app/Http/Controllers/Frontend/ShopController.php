@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
-use App\Models\FlashDeal;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Database\Eloquent\Builder;
@@ -58,7 +57,6 @@ class ShopController extends Controller
             }))
             ->when($min !== null, fn (Builder $q) => $q->where('price', '>=', $min))
             ->when($max !== null, fn (Builder $q) => $q->where('price', '<=', $max))
-            ->when($request->boolean('flash'), fn (Builder $q) => $q->whereIn('id', FlashDeal::liveProductIds()))
             ->when($sort === 'lo', fn (Builder $q) => $q->orderBy('price')->orderByDesc('id'))
             ->when($sort === 'hi', fn (Builder $q) => $q->orderByDesc('price')->orderByDesc('id'))
             ->when($sort === 'pop', fn (Builder $q) => $q->orderByDesc('sold_count')->orderByDesc('id'))

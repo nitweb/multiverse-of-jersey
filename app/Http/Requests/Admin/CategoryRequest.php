@@ -18,6 +18,7 @@ class CategoryRequest extends FormRequest
         $this->merge([
             'is_active' => $this->boolean('is_active'),
             'show_on_home' => $this->boolean('show_on_home'),
+            'show_products_on_home' => $this->boolean('show_products_on_home'),
         ]);
     }
 
@@ -46,10 +47,10 @@ class CategoryRequest extends FormRequest
             'meta_title' => ['nullable', 'string', 'max:160'],
             'meta_description' => ['nullable', 'string', 'max:320'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-            'icon' => ['nullable', 'file', 'mimes:png,svg,webp', 'max:512'],
             'sort_order' => ['required', 'integer', 'min:0'],
             'is_active' => ['boolean'],
             'show_on_home' => ['boolean'],
+            'show_products_on_home' => ['boolean'],
             'promos' => ['nullable', 'array', 'max:2'],
             'promos.*.badge' => ['nullable', 'string', 'max:40'],
             'promos.*.title' => ['nullable', 'string', 'max:100'],

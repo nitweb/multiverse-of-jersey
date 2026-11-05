@@ -19,10 +19,10 @@ class ProductSeeder extends Seeder
         $dir = 'assets/frontend/images/products/';
 
         $items = [
-            ['OXXO Premium Cotton Panjabi for Men', 'Fashion', 'OXXO', 946, 1290, 'oxxo-premium-cotton-panjabi-for-men.webp', ['flash' => true, 'featured' => true, 'variants' => [['M', 'White', 20], ['L', 'White', 15], ['XL', 'Navy', 13]]]],
-            ['AXIS-Y Dark Spot Correcting Glow Serum 50ml', 'Beauty', 'AXIS-Y', 1299, 2000, 'axis-y-dark-spot-correcting-glow-serum-50ml.webp', ['flash' => true, 'stock' => 40]],
-            ['Dot & Key Vitamin C + E Sunscreen SPF 50+ 80gm', 'Beauty', null, 999, 1800, 'dot-and-key-vitamin-c-plus-e-sunscreen-spf-50-plus-80gm.webp', ['flash' => true, 'stock' => 25]],
-            ['The Ordinary Niacinamide 10% + Zinc 1% 30ml', 'Beauty', 'The Ordinary', 1099, 1650, 'the-ordinary-niacinamide-10-percent-plus-zinc-1-percent-30ml.webp', ['flash' => true, 'stock' => 60]],
+            ['OXXO Premium Cotton Panjabi for Men', 'Fashion', 'OXXO', 946, 1290, 'oxxo-premium-cotton-panjabi-for-men.webp', ['featured' => true, 'variants' => [['M', 'White', 20], ['L', 'White', 15], ['XL', 'Navy', 13]]]],
+            ['AXIS-Y Dark Spot Correcting Glow Serum 50ml', 'Beauty', 'AXIS-Y', 1299, 2000, 'axis-y-dark-spot-correcting-glow-serum-50ml.webp', ['stock' => 40]],
+            ['Dot & Key Vitamin C + E Sunscreen SPF 50+ 80gm', 'Beauty', null, 999, 1800, 'dot-and-key-vitamin-c-plus-e-sunscreen-spf-50-plus-80gm.webp', ['stock' => 25]],
+            ['The Ordinary Niacinamide 10% + Zinc 1% 30ml', 'Beauty', 'The Ordinary', 1099, 1650, 'the-ordinary-niacinamide-10-percent-plus-zinc-1-percent-30ml.webp', ['stock' => 60]],
             ['Himalaya Moisturizing Aloe Vera Face Gel 100ml', 'Beauty', 'Himalaya', 135, 199, 'himalaya-moisturizing-aloe-vera-face-gel-100ml.webp', ['new' => true, 'stock' => 120]],
             ['Simple Refreshing Facial Wash Gel 150ml', 'Beauty', 'Simple', 450, 620, 'simple-refreshing-facial-wash-gel-150ml.webp', ['new' => true, 'stock' => 80]],
             ['Vaseline Gluta Hya Dewy Radiance Lotion 200ml', 'Beauty', 'Vaseline', 560, 800, 'vaseline-gluta-hya-dewy-radiance-lotion-200ml.webp', ['new' => true, 'stock' => 70]],

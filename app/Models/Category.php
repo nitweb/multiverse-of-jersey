@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 
 #[Fillable([
-    'parent_id', 'name', 'slug', 'description', 'image', 'icon',
-    'meta_title', 'meta_description', 'is_active', 'show_on_home', 'sort_order', 'promos',
+    'parent_id', 'name', 'slug', 'description', 'image',
+    'meta_title', 'meta_description', 'is_active', 'show_on_home', 'show_products_on_home', 'sort_order', 'promos',
 ])]
 class Category extends Model
 {
@@ -21,6 +21,7 @@ class Category extends Model
         return [
             'is_active' => 'boolean',
             'show_on_home' => 'boolean',
+            'show_products_on_home' => 'boolean',
             'promos' => 'array',
         ];
     }
@@ -49,11 +50,6 @@ class Category extends Model
     public function getImageUrlAttribute(): ?string
     {
         return $this->image ? asset($this->image) : null;
-    }
-
-    public function getIconUrlAttribute(): ?string
-    {
-        return $this->icon ? asset($this->icon) : null;
     }
 
     public static function flushMenuCache(): void
@@ -100,13 +96,13 @@ class Category extends Model
      *
      * @return Collection<int, self>
      */
-    public static function homeList(): Collection
+    public static function homeList(string $flag = 'show_on_home'): Collection
     {
         $list = new Collection;
 
-        $walk = function (Collection $nodes) use (&$walk, $list): void {
+        $walk = function (Collection $nodes) use (&$walk, $list, $flag): void {
             foreach ($nodes as $node) {
-                if ($node->show_on_home) {
+                if ($node->{$flag}) {
                     $list->push($node);
                 }
 

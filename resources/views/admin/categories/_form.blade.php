@@ -2,6 +2,7 @@
     $selectedParent = old('parent_id', $category?->parent_id ?? request('parent'));
     $isActive = session()->hasOldInput() ? (bool) old('is_active') : ($category?->is_active ?? true);
     $showOnHome = session()->hasOldInput() ? (bool) old('show_on_home') : ($category?->show_on_home ?? false);
+    $showProductsOnHome = session()->hasOldInput() ? (bool) old('show_products_on_home') : ($category?->show_products_on_home ?? false);
     $promo = fn (int $index, string $key) => old("promos.{$index}.{$key}", data_get($category?->promos, "{$index}.{$key}", ''));
 @endphp
 
@@ -124,25 +125,6 @@
                         </div>
                         @error('image')<p class="text-danger text-xs mt-1">{{ $message }}</p>@enderror
                     </div>
-                    <div>
-                        <label class="lbl">Icon (optional)</label>
-                        <div class="drop !p-5 flex flex-col sm:flex-row items-center gap-5 text-left">
-                            <img id="cicon" src="{{ $category?->icon_url ?? asset('assets/admin/img/no-image.svg') }}" class="w-16 h-16 rounded-xl object-contain bg-white border border-line shrink-0" alt="">
-                            <div class="text-center sm:text-left">
-                                <p class="font-bold">Icon (optional)</p>
-                                <p class="text-xs text-ink/50 mt-1 mb-3">Small SVG, PNG or WEBP</p>
-                                <div class="flex gap-2 justify-center sm:justify-start">
-                                    <label class="btn btn-primary btn-sm cursor-pointer">
-                                        <svg class="ic ic-sm"><use href="#i-upload" /></svg>Upload
-                                        <input type="file" name="icon" class="hidden" accept="image/*" data-preview="#cicon">
-                                    </label>
-                                    <button type="button" class="btn btn-ghost btn-sm" data-reset-img="#cicon">Remove</button>
-                                </div>
-                                <input type="hidden" name="remove_icon" value="0" data-remove>
-                            </div>
-                        </div>
-                        @error('icon')<p class="text-danger text-xs mt-1">{{ $message }}</p>@enderror
-                    </div>
                 </div>
             </div>
         </section>
@@ -157,10 +139,17 @@
                     </div>
                     <div class="flex items-center justify-between gap-4">
                         <div>
-                            <p class="font-semibold">Show on homepage slider</p>
-                            <p class="text-xs text-ink/50">“Shop by category” section</p>
+                            <p class="font-semibold">Shop by category</p>
+                            <p class="text-xs text-ink/50">Show in homepage slider</p>
                         </div>
                         <label class="switch"><input type="checkbox" name="show_on_home" value="1" @checked($showOnHome)><i></i></label>
+                    </div>
+                    <div class="flex items-center justify-between gap-4">
+                        <div>
+                            <p class="font-semibold">Category Products</p>
+                            <p class="text-xs text-ink/50">Show products on homepage</p>
+                        </div>
+                        <label class="switch"><input type="checkbox" name="show_products_on_home" value="1" @checked($showProductsOnHome)><i></i></label>
                     </div>
                     <div>
                         <label class="lbl" for="sort_order">Display order</label>

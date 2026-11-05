@@ -21,8 +21,8 @@ return [
         'orders' => ['label' => 'Orders', 'icon' => 'cart', 'actions' => ['view', 'create', 'edit', 'delete', 'export']],
         'customers' => ['label' => 'Customers', 'icon' => 'users', 'actions' => ['view', 'create', 'edit', 'delete', 'export']],
         'coupons' => ['label' => 'Coupons', 'icon' => 'ticket', 'actions' => ['view', 'create', 'edit', 'delete']],
-        'flash' => ['label' => 'Flash Deals', 'icon' => 'zap', 'actions' => ['view', 'create', 'edit', 'delete']],
         'banners' => ['label' => 'Banners & Sliders', 'icon' => 'image', 'actions' => ['view', 'create', 'edit', 'delete']],
+        'feedbacks' => ['label' => 'Customer Feedback', 'icon' => 'image', 'actions' => ['view', 'create', 'edit', 'delete']],
         'promos' => ['label' => 'Promos', 'icon' => 'image', 'actions' => ['view', 'edit']],
         'pages' => ['label' => 'Pages', 'icon' => 'file', 'actions' => ['view', 'create', 'edit', 'delete']],
         'faqs' => ['label' => 'FAQs', 'icon' => 'help', 'actions' => ['view', 'create', 'edit', 'delete']],
@@ -49,7 +49,7 @@ return [
         'Content Editor' => [
             'color' => '#7C3AED',
             'description' => 'Create and edit products, banners, pages and FAQs.',
-            'permissions' => ['dashboard:view', 'products:view', 'products:create', 'products:edit', 'categories:view', 'categories:create', 'categories:edit', 'brands:view', 'brands:create', 'brands:edit', 'banners:view', 'banners:create', 'banners:edit', 'promos:view', 'promos:edit', 'pages:view', 'pages:create', 'pages:edit', 'faqs:view', 'faqs:create', 'faqs:edit'],
+            'permissions' => ['dashboard:view', 'products:view', 'products:create', 'products:edit', 'categories:view', 'categories:create', 'categories:edit', 'brands:view', 'brands:create', 'brands:edit', 'banners:view', 'banners:create', 'banners:edit', 'feedbacks:view', 'feedbacks:create', 'feedbacks:edit', 'promos:view', 'promos:edit', 'pages:view', 'pages:create', 'pages:edit', 'faqs:view', 'faqs:create', 'faqs:edit'],
         ],
         'Support Agent' => [
             'color' => '#0A8F6B',

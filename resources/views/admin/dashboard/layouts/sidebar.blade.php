@@ -106,15 +106,6 @@
         </a>
         @endif
 
-        @if ($navAdmin->hasPermission('flash:view'))
-        <a href="{{ route('admin.flash-deals.index') }}" class="nav-link {{ request()->routeIs('admin.flash-deals.*') ? 'active' : '' }}">
-            <svg class="ic ">
-                <use href="#i-zap" />
-            </svg>
-            <span>Flash Deals</span>
-        </a>
-        @endif
-
         <p class="nav-label">Content</p>
 
         @if ($navAdmin->hasPermission('banners:view'))
@@ -123,6 +114,15 @@
                 <use href="#i-image" />
             </svg>
             <span>Banners & Sliders</span>
+        </a>
+        @endif
+
+        @if ($navAdmin->hasPermission('feedbacks:view'))
+        <a href="{{ route('admin.customer-feedbacks.index') }}" class="nav-link {{ request()->routeIs('admin.customer-feedbacks.*') ? 'active' : '' }}">
+            <svg class="ic ">
+                <use href="#i-image" />
+            </svg>
+            <span>Customer Feedback</span>
         </a>
         @endif
 

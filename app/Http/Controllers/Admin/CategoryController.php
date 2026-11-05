@@ -35,16 +35,12 @@ class CategoryController extends Controller
 
     public function store(CategoryRequest $request): RedirectResponse
     {
-        $data = $request->safe()->except(['image', 'icon', 'promos']);
+        $data = $request->safe()->except(['image', 'promos']);
         $data['slug'] = $this->resolveSlug($request->input('slug'), $data['name']);
         $data['promos'] = $this->cleanPromos($request->input('promos', []));
 
         if ($request->hasFile('image')) {
             $data['image'] = $this->storeImage($request->file('image'));
-        }
-
-        if ($request->hasFile('icon')) {
-            $data['icon'] = $this->storeIcon($request->file('icon'));
         }
 
         Category::create($data);
@@ -64,7 +60,7 @@ class CategoryController extends Controller
 
     public function update(CategoryRequest $request, Category $category): RedirectResponse
     {
-        $data = $request->safe()->except(['image', 'icon', 'promos']);
+        $data = $request->safe()->except(['image', 'promos']);
         $data['slug'] = $this->resolveSlug($request->input('slug'), $data['name'], $category->id);
         $data['promos'] = $this->cleanPromos($request->input('promos', []));
 
@@ -74,14 +70,6 @@ class CategoryController extends Controller
         } elseif ($request->boolean('remove_image')) {
             $this->deleteFile($category->image);
             $data['image'] = null;
-        }
-
-        if ($request->hasFile('icon')) {
-            $this->deleteFile($category->icon);
-            $data['icon'] = $this->storeIcon($request->file('icon'));
-        } elseif ($request->boolean('remove_icon')) {
-            $this->deleteFile($category->icon);
-            $data['icon'] = null;
         }
 
         $category->update($data);
@@ -103,7 +91,6 @@ class CategoryController extends Controller
         }
 
         $this->deleteFile($category->image);
-        $this->deleteFile($category->icon);
         $category->delete();
 
         return to_route('admin.categories.index')->with('success', 'Category deleted');
@@ -160,17 +147,6 @@ class CategoryController extends Controller
             ->save(public_path($path));
 
         return $path;
-    }
-
-    private function storeIcon(UploadedFile $file): string
-    {
-        File::ensureDirectoryExists(public_path(self::DIRECTORY));
-
-        $name = 'icon-'.Str::uuid().'.'.($file->guessExtension() ?: 'png');
-
-        $file->move(public_path(self::DIRECTORY), $name);
-
-        return self::DIRECTORY.'/'.$name;
     }
 
     private function deleteFile(?string $path): void

@@ -28,6 +28,8 @@
                         <th>Slug</th>
                         <th>Sub-categories</th>
                         <th>Active</th>
+                        <th>Shop by category</th>
+                        <th>Category Products</th>
                         <th class="text-right">Actions</th>
                     </tr>
                 </thead>
@@ -57,6 +59,8 @@
                                     <label class="switch"><input type="checkbox" @checked($category->is_active) onchange="this.form.submit()"><i></i></label>
                                 </form>
                             </td>
+                            <td><span class="badge {{ $category->show_on_home ? 'b-success' : 'b-muted' }}">{{ $category->show_on_home ? 'On' : 'Off' }}</span></td>
+                            <td><span class="badge {{ $category->show_products_on_home ? 'b-success' : 'b-muted' }}">{{ $category->show_products_on_home ? 'On' : 'Off' }}</span></td>
                             <td>
                                 <div class="flex items-center justify-end gap-1">
                                     <a href="{{ route('admin.categories.create', ['parent' => $category->id]) }}" class="icon-btn" title="Add sub-category">
@@ -77,7 +81,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center text-ink/55 py-10">No categories yet.</td>
+                            <td colspan="7" class="text-center text-ink/55 py-10">No categories yet.</td>
                         </tr>
                     @endforelse
                 </tbody>

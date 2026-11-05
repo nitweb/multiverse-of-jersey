@@ -272,7 +272,6 @@
                     @foreach ([
                         ['products', 'admin.products.create', 'plus', 'Add product'],
                         ['coupons', 'admin.coupons.create', 'ticket', 'New coupon'],
-                        ['flash', 'admin.flash-deals.create', 'zap', 'Flash deal'],
                         ['banners', 'admin.banners.create', 'image', 'Add banner'],
                     ] as [$module, $route, $icon, $label])
                         @if ($dashAdmin->hasPermission("{$module}:create"))

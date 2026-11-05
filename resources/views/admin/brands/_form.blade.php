@@ -22,7 +22,7 @@
                     </div>
                     <div>
                         <label class="lbl" for="website">Website</label>
-                        <input class="input" id="website" name="website" type="url" value="{{ old('website', $brand?->website ?? 'https://') }}">
+                        <input class="input" id="website" name="website" type="url" placeholder="https://example.com" value="{{ old('website', $brand?->website) }}">
                         @error('website')<p class="text-danger text-xs mt-1">{{ $message }}</p>@enderror
                     </div>
                     <div>

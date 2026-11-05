@@ -78,7 +78,7 @@
                         </div>
                     @endforeach
                 </div>
-                <p class="hint mt-3">Shown on product cards (flash deals): front by default, back on hover.</p>
+                <p class="hint mt-3">Shown on product cards: front by default, back on hover.</p>
             </div>
         </section>
 

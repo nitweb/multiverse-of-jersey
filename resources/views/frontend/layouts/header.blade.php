@@ -51,8 +51,6 @@
                 </div>
             </div>
 
-            <a href="index.html#flash" class="nav-link">Flash Deals</a>
-
             <a href="track-order.html" class="nav-link">Track Order</a>
 
             <a href="about.html" class="nav-link">About</a>

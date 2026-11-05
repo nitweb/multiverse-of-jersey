@@ -3,15 +3,9 @@
 use App\Models\Cart;
 use App\Models\Category;
 use App\Models\Coupon;
-use App\Models\FlashDeal;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Models\User;
-use Carbon\CarbonImmutable;
-
-beforeEach(function () {
-    FlashDeal::flushLiveCache();
-});
 
 function cartProduct(array $attributes = []): Product
 {
@@ -102,26 +96,6 @@ it('needs a valid variant and uses the variant price and stock', function () {
         ->assertJsonPath('cart.items.0.quantity', 2)
         ->assertJsonPath('cart.items.0.unit_price', near(800))
         ->assertJsonPath('cart.items.0.variant', 'Size: S');
-});
-
-it('charges the live flash deal price and limits the quantity to the deal stock', function () {
-    $this->travelTo(CarbonImmutable::parse('2026-10-15 12:00:00', FlashDeal::TIMEZONE));
-
-    $product = cartProduct();
-    $deal = FlashDeal::create([
-        'title' => 'Flash', 'starts_at' => '2026-10-10 00:00:00', 'ends_at' => '2026-10-10 23:59:00', 'repeat_daily' => true,
-    ]);
-    $deal->items()->create(['product_id' => $product->id, 'discount_percent' => 20, 'deal_stock' => 2, 'sort_order' => 0]);
-
-    addToCart($this, $product, 4)
-        ->assertOk()
-        ->assertJsonPath('cart.items.0.unit_price', near(800))
-        ->assertJsonPath('cart.items.0.quantity', 2)
-        ->assertJsonPath('cart.subtotal', near(1600));
-
-    $deal->update(['is_active' => false]);
-
-    $this->getJson(route('cart.summary'))->assertJsonPath('cart.items.0.unit_price', near(1000));
 });
 
 it('updates and removes lines', function () {

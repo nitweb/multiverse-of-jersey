@@ -104,6 +104,7 @@ class CategorySeeder extends Seeder
                     'sort_order' => $index + 1,
                     'is_active' => true,
                     'show_on_home' => $node['home'] ?? false,
+                    'show_products_on_home' => $node['home'] ?? false,
                     'promos' => $node['promos'] ?? null,
                 ],
             );

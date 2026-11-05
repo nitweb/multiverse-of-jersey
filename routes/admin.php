@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\Auth\RegisteredUserController;
 use App\Http\Controllers\Admin\Auth\VerifyEmailController;
 use App\Http\Controllers\Admin\AboutController;
 use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\CustomerFeedbackController;
 use App\Http\Controllers\Admin\PromoController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -19,7 +20,6 @@ use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\ExpenseCategoryController;
 use App\Http\Controllers\Admin\ExpenseController;
 use App\Http\Controllers\Admin\FaqController;
-use App\Http\Controllers\Admin\FlashDealController;
 use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\PrivacyPageController;
@@ -89,6 +89,10 @@ Route::middleware('auth:admin')
         Route::middleware('permission:banners')->group(function () {
             Route::resource('banners', BannerController::class)->except('show');
         });
+        // Customer Feedback Routes
+        Route::middleware('permission:feedbacks')->group(function () {
+            Route::resource('customer-feedbacks', CustomerFeedbackController::class)->except('show');
+        });
         // Promo Routes
         Route::middleware('permission:promos,singleton')->group(function () {
             Route::get('promos', [PromoController::class, 'edit'])->name('promos.edit');
@@ -108,11 +112,6 @@ Route::middleware('auth:admin')
         Route::middleware('permission:brands')->group(function () {
             Route::patch('brands/{brand}/toggle', [BrandController::class, 'toggle'])->name('brands.toggle');
             Route::resource('brands', BrandController::class)->except('show');
-        });
-        // Flash Deal Routes
-        Route::middleware('permission:flash')->group(function () {
-            Route::patch('flash-deals/{flash_deal}/toggle', [FlashDealController::class, 'toggle'])->name('flash-deals.toggle');
-            Route::resource('flash-deals', FlashDealController::class)->except('show');
         });
         // Coupon Routes
         Route::middleware('permission:coupons')->group(function () {

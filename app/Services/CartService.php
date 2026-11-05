@@ -13,12 +13,12 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * The shopping cart. Guests keep it in the session, signed-in customers in the database.
- * Only product, variant and quantity are stored; every price, stock limit, flash deal,
+ * Only product, variant and quantity are stored; every price, stock limit,
  * coupon and delivery fee is recalculated from the database each time the cart is read.
  */
 class CartService
 {
-    /** Technical ceiling only; the real limit for a line is its stock (and flash deal allowance). */
+    /** Technical ceiling only; the real limit for a line is its stock. */
     public const MAX_QUANTITY = 100000;
 
     private const SESSION_KEY = 'cart';
@@ -349,10 +349,8 @@ class CartService
                 $this->notices[] = "Only {$max} of {$product->name} available, so the quantity was updated.";
             }
 
-            $flash = $product->flash_item;
-            $base = (float) ($variant?->price ?? $product->price);
-            $unit = $product->flashPrice($base);
-            $reference = max((float) ($product->compare_price ?? 0), $flash ? $base : 0.0);
+            $unit = (float) ($variant?->price ?? $product->price);
+            $reference = (float) ($product->compare_price ?? 0);
             $old = $reference > $unit ? $reference : null;
 
             $lines[] = [
@@ -369,7 +367,6 @@ class CartService
                 'unit_price' => $unit,
                 'old_price' => $old,
                 'line_total' => round($unit * $quantity, 2),
-                'is_flash' => $flash !== null,
                 'is_free_delivery' => (bool) $product->is_free_delivery,
             ];
         }
@@ -392,17 +389,13 @@ class CartService
             ?? throw new DomainException('This option is not available.');
     }
 
-    /** The most a customer can hold of one line: stock, the flash deal allowance and the per-line cap. */
+    /** The most a customer can hold of one line: stock and the per-line cap. */
     private function maxQuantity(Product $product, ?ProductVariant $variant): int
     {
         $max = self::MAX_QUANTITY;
 
         if ($product->track_inventory) {
             $max = min($max, (int) ($variant?->stock ?? $product->stock));
-        }
-
-        if ($dealStock = $product->flash_item?->deal_stock) {
-            $max = min($max, (int) $dealStock);
         }
 
         return max(0, $max);

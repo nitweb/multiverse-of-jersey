@@ -165,29 +165,12 @@ class Product extends Model
         return (int) round((1 - $this->price / $this->compare_price) * 100);
     }
 
-    /** The live flash deal line for this product, if it is in a deal running right now. */
-    public function getFlashItemAttribute(): ?FlashDealProduct
-    {
-        return FlashDeal::liveItemMap()->get($this->id);
-    }
-
-    public function getIsOnFlashAttribute(): bool
-    {
-        return $this->flash_item !== null;
-    }
-
-    /** Applies the live flash discount (if any) to a price, e.g. a variant price. */
-    public function flashPrice(float $price): float
-    {
-        return $this->flash_item?->priceFor($price) ?? $price;
-    }
-
     public function getDisplayPriceAttribute(): float
     {
-        return $this->flashPrice((float) $this->price);
+        return (float) $this->price;
     }
 
-    /** The crossed-out price: compare price (or the normal price during a flash deal) when it is higher than what is charged. */
+    /** The crossed-out price: compare price when it is higher than what is charged. */
     public function getDisplayOldPriceAttribute(): ?float
     {
         $reference = max((float) ($this->compare_price ?? 0), (float) $this->price);
