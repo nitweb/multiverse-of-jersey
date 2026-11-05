@@ -12,7 +12,8 @@
                     <p class="eyebrow !text-accent">
                         <svg class="ic w-3.5 h-3.5" aria-hidden="true">
                             <use href="#i-zap" />
-                        </svg> Limited time
+                        </svg> 
+                        Limited time
                     </p>
                     <h2>{{ $flashDeal->title ?: 'Flash deals' }}</h2>
                 </div>
