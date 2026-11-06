@@ -1,6 +1,6 @@
 @if ($featuredProducts->isNotEmpty())
 
-    <section class="section">
+    <section class="section" style="padding-block: 20px;">
 
         <div class="container-x">
 
