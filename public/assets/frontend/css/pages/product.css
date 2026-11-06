@@ -15,3 +15,5 @@
 .custom .chk small{margin-left:0;color:inherit}
 .bg-accent-soft{background:rgb(var(--color-accent-soft))}
 .custom .chk b.text-primary{white-space:nowrap}
+.size-chip input:disabled+span{opacity:.4;text-decoration:line-through;cursor:not-allowed}.size-chip input:disabled+span:hover{border-color:rgb(var(--color-line))}
+@media(min-width:1024px){.gallery{position:sticky;top:96px;align-self:start}}
