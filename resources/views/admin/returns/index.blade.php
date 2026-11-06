@@ -117,7 +117,7 @@
                     @endif
                     <div>
                         <label class="lbl" for="rt-q">Order number, name or phone</label>
-                        <div class="input-group"><svg class="ic"><use href="#i-search" /></svg><input class="input" id="rt-q" type="text" autocomplete="off" placeholder="e.g. NM-10025 or 01700000000"></div>
+                        <div class="input-group"><svg class="ic"><use href="#i-search" /></svg><input class="input" id="rt-q" type="text" autocomplete="off" placeholder="e.g. MOJ-10025 or 01700000000"></div>
                         <ul id="rt-results" class="mt-2 space-y-1"></ul>
                     </div>
                     <div id="rt-picked" hidden>

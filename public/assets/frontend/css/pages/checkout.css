@@ -55,3 +55,11 @@
 .os-next li:before{content:counter(n);flex:0 0 26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;background:rgb(var(--color-primary-soft));color:rgb(var(--color-primary))}
 .os-note{display:flex;gap:12px;padding:16px;border-radius:16px;background:rgb(var(--color-accent-soft));font-size:14px;line-height:1.55}
 @media print{.os-copy,.os-actions,.site-header,.topbar,.site-footer,.chat,.to-top{display:none!important}}
+
+/* Track order */
+.tk-badge{display:inline-flex;align-items:center;margin-top:2px;padding:5px 14px;border-radius:999px;font-weight:700;font-size:13px;background:rgb(var(--color-info)/.12);color:rgb(var(--color-info))}
+.tk-badge.is-pending{background:rgb(var(--color-accent)/.1);color:rgb(var(--color-accent))}
+.tk-badge.is-delivered{background:rgb(var(--color-success)/.12);color:rgb(var(--color-success))}
+.tk-badge.is-cancelled,.tk-badge.is-returned{background:rgb(var(--color-danger)/.12);color:rgb(var(--color-danger))}
+.timeline li.stop .dot{background:rgb(var(--color-danger));border-color:rgb(var(--color-danger));color:#fff}
+.timeline li.stop{color:rgb(var(--color-ink))}

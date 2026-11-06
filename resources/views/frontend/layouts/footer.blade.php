@@ -49,7 +49,7 @@
             <div>
                 <h4>Help</h4>
                 <ul>
-                    <li><a href="track-order.html">Track order</a></li>
+                    <li><a href="{{ route('track.show') }}">Track order</a></li>
                     <li><a href="faq.html">FAQs</a></li>
                     <li><a href="page.html">Shipping &amp; returns</a></li>
                     <li><a href="page.html">Terms &amp; conditions</a></li>

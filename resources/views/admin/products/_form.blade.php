@@ -142,7 +142,7 @@
                 <div class="grid sm:grid-cols-3 gap-5">
                     <div>
                         <label class="lbl" for="sku">SKU</label>
-                        <input class="input" id="sku" name="sku" type="text" value="{{ $val('sku') }}" placeholder="NM-0000">
+                        <input class="input" id="sku" name="sku" type="text" value="{{ $val('sku') }}" placeholder="MOJ-0000">
                         @error('sku')<p class="text-danger text-xs mt-1">{{ $message }}</p>@enderror
                     </div>
                     <div>

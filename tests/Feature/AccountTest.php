@@ -40,7 +40,7 @@ function accountOrder(array $attributes = [], ?Product $product = null): Order
         'delivery_fee' => 70,
         'total' => 570,
     ]);
-    $order->update(['number' => 'NM-'.(20000 + $order->id)]);
+    $order->update(['number' => 'MOJ-'.(20000 + $order->id)]);
 
     if ($product) {
         $order->items()->create([

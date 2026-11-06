@@ -32,7 +32,7 @@ function reportOrder(array $attributes = []): Order
         'zone' => 'inside', 'zone_label' => 'Inside Dhaka', 'status' => 'delivered', 'payment_status' => 'paid',
         'subtotal' => 1000, 'discount' => 0, 'delivery_fee' => 60, 'total' => 1060,
     ]);
-    $order->update(['number' => 'NM-'.(10000 + $order->id)]);
+    $order->update(['number' => 'MOJ-'.(10000 + $order->id)]);
     $order->items()->create([
         'name' => 'Widget', 'unit_price' => 500, 'cost_price' => 300, 'quantity' => 2, 'line_total' => 1000,
     ]);

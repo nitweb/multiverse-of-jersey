@@ -221,7 +221,7 @@ class CheckoutService
                 'total' => $summary['total'],
             ]);
 
-            $order->update(['number' => 'NM-'.(10000 + $order->id)]);
+            $order->update(['number' => 'MOJ-'.(10000 + $order->id)]);
 
             $skus = $this->skus($summary['items']);
             $costs = Product::query()->whereIn('id', array_column($summary['items'], 'product_id'))->pluck('cost_price', 'id');

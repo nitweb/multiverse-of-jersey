@@ -13,7 +13,7 @@
                 +880 1700-000000
             </a>
 
-            <a href="track-order.html" class="hover:underline">Track order</a>
+            <a href="{{ route('track.show') }}" class="hover:underline">Track order</a>
 
         </p>
 

@@ -44,8 +44,8 @@ Route::prefix('cart')->as('cart.')->middleware('throttle:120,1')->group(function
 
 Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
 Route::post('/checkout', [CheckoutController::class, 'store'])->middleware('throttle:10,1')->name('checkout.store');
-Route::get('/order/success/{number}', [CheckoutController::class, 'success'])->where('number', 'NM-\d+')->name('checkout.success');
-Route::get('/order/invoice/{number}', [CheckoutController::class, 'invoice'])->where('number', 'NM-\d+')->name('checkout.invoice');
+Route::get('/order/success/{number}', [CheckoutController::class, 'success'])->where('number', '(?:MOJ|NM)-\d+')->name('checkout.success');
+Route::get('/order/invoice/{number}', [CheckoutController::class, 'invoice'])->where('number', '(?:MOJ|NM)-\d+')->name('checkout.invoice');
 
 Route::get('/about', [AboutController::class, 'show'])->name('about.show');
 
@@ -59,7 +59,7 @@ Route::get('/shipping', [ShippingController::class, 'show'])->name('shipping.sho
 Route::get('/terms', [TermsController::class, 'show'])->name('terms.show');
 
 Route::get('/track', [TrackController::class, 'show'])->name('track.show');
-Route::post('/track', [TrackController::class, 'lookup'])->name('track.lookup');
+Route::post('/track', [TrackController::class, 'lookup'])->middleware('throttle:15,1')->name('track.lookup');
 
 Route::get('/dashboard', fn () => to_route('account.index'))
     ->middleware('auth')
@@ -69,8 +69,8 @@ Route::middleware('auth')->prefix('account')->as('account.')->group(function () 
     Route::get('/', [AccountController::class, 'index'])->name('index');
 
     Route::get('orders', [AccountOrderController::class, 'index'])->name('orders');
-    Route::get('orders/{number}', [AccountOrderController::class, 'show'])->where('number', 'NM-\d+')->name('orders.show');
-    Route::post('orders/{number}/reorder', [AccountOrderController::class, 'reorder'])->where('number', 'NM-\d+')->name('orders.reorder');
+    Route::get('orders/{number}', [AccountOrderController::class, 'show'])->where('number', '(?:MOJ|NM)-\d+')->name('orders.show');
+    Route::post('orders/{number}/reorder', [AccountOrderController::class, 'reorder'])->where('number', '(?:MOJ|NM)-\d+')->name('orders.reorder');
 
     Route::get('profile', [AccountController::class, 'profile'])->name('profile');
     Route::patch('profile', [AccountController::class, 'updateProfile'])->name('profile.update');

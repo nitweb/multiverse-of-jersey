@@ -52,7 +52,7 @@ it('places a cash on delivery order for a guest and empties the cart', function 
 
     $response->assertRedirect(route('checkout.success', $order->number));
 
-    expect($order->number)->toBe('NM-'.(10000 + $order->id))
+    expect($order->number)->toBe('MOJ-'.(10000 + $order->id))
         ->and($order->status)->toBe('pending')
         ->and($order->payment_method)->toBe('cod')
         ->and($order->payment_status)->toBe('unpaid')

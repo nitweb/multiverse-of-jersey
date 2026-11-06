@@ -51,7 +51,7 @@ class ProductSeeder extends Seeder
                 'description' => $name.". Genuine product with official warranty.\n\nCash on delivery available all over Bangladesh.",
                 'price' => $price,
                 'compare_price' => $compare,
-                'sku' => 'NM-'.(1001 + $index),
+                'sku' => 'MOJ-'.(1001 + $index),
                 'stock' => $opts['stock'] ?? 0,
                 'is_featured' => $opts['featured'] ?? false,
                 'is_new' => $opts['new'] ?? false,

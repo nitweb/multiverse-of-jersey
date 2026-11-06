@@ -48,7 +48,7 @@
                 </div>
             </div>
 
-            <a href="track-order.html" class="nav-link">Track Order</a>
+            <a href="{{ route('track.show') }}" class="nav-link">Track Order</a>
 
             <a href="about.html" class="nav-link">About</a>
 
