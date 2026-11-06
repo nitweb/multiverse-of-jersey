@@ -50,11 +50,12 @@
                 <h4>Help</h4>
                 <ul>
                     <li><a href="{{ route('track.show') }}">Track order</a></li>
-                    <li><a href="faq.html">FAQs</a></li>
-                    <li><a href="page.html">Shipping &amp; returns</a></li>
-                    <li><a href="page.html">Terms &amp; conditions</a></li>
-                    <li><a href="page.html">Privacy policy</a></li>
-                    <li><a href="account.html">My account</a></li>
+                    <li><a href="{{ route('faq.index') }}">FAQs</a></li>
+                    <li><a href="{{ route('shipping.show') }}">Shipping</a></li>
+                    <li><a href="{{ route('returns.show') }}">Returns</a></li>
+                    <li><a href="{{ route('terms.show') }}">Terms &amp; conditions</a></li>
+                    <li><a href="{{ route('privacy.show') }}">Privacy policy</a></li>
+                    <li><a href="{{ route('account.index') }}">My account</a></li>
                 </ul>
             </div>
 

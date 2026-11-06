@@ -1,10 +1,10 @@
 /* MULTIVERSE OF JERSEY — common JS (loaded on every page): theme, header, nav, cart, wishlist, toast, chat.
-   Cart talks to the server (CartService). Wishlist still uses localStorage. */
+   Cart talks to the server (CartService); the wishlist is saved on the signed-in customer's account. */
 (function () {
   'use strict';
   var $ = function (s, c) { return (c || document).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
-  var KEY_CART = 'jbd_cart', KEY_WISH = 'jbd_wish', KEY_THEME = 'jbd_theme';
+  var KEY_THEME = 'jbd_theme';
   var CFG = { currency: '৳', freeAbove: 5000, minOrder: 500, coupons: { JERSEY10: { type: 'percent', value: 10, label: 'JERSEY10' }, WELCOME200: { type: 'flat', value: 200, label: 'WELCOME200' } } };
 
   function read(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } }
@@ -54,14 +54,33 @@
     subtotal: function () { return state.subtotal || 0; }
   };
 
-  /* ---------- wishlist ---------- */
+  /* ---------- wishlist (server, per signed-in customer) ---------- */
+  var WISH = SRV.wish || { auth: false, ids: [], toggle: '', login: '' };
+  var wishIds = (WISH.ids || []).map(String);
   var wish = {
-    get: function () { return read(KEY_WISH, []); },
-    has: function (id) { return wish.get().some(function (x) { return String(x.id) === String(id); }); },
-    toggle: function (it) {
-      var w = wish.get(), i = -1; w.forEach(function (x, n) { if (String(x.id) === String(it.id)) i = n; });
-      if (i > -1) w.splice(i, 1); else w.push(it);
-      write(KEY_WISH, w); update(); document.dispatchEvent(new CustomEvent('wish:change')); return i === -1;
+    get: function () { return wishIds.slice(); },
+    has: function (id) { return wishIds.indexOf(String(id)) > -1; },
+    toggle: function (id) {
+      if (!WISH.auth) {
+        toast('Please log in to save jerseys to your wishlist', 'error');
+        setTimeout(function () { location.href = WISH.login; }, 900);
+        return Promise.resolve({ ok: false });
+      }
+      return fetch(WISH.toggle, {
+        method: 'POST', credentials: 'same-origin',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, 'X-Requested-With': 'XMLHttpRequest' },
+        body: JSON.stringify({ product_id: +id })
+      }).then(function (res) {
+        if (res.status === 401 || res.status === 419) { location.href = WISH.login; return { ok: false }; }
+        return res.json().catch(function () { return {}; }).then(function (data) {
+          if (!res.ok) return { ok: false, message: data.message || 'Something went wrong. Please try again.' };
+          wishIds = wishIds.filter(function (x) { return x !== String(id); });
+          if (data.wished) wishIds.push(String(id));
+          update();
+          document.dispatchEvent(new CustomEvent('wish:change', { detail: { id: String(id), wished: !!data.wished, count: data.count } }));
+          return { ok: true, wished: !!data.wished, message: data.message };
+        });
+      }).catch(function () { return { ok: false, message: 'Network problem. Please check your connection.' }; });
     }
   };
 
@@ -137,9 +156,10 @@
       return;
     }
     if ((el = q('[data-wish]'))) {
-      var host = el.closest('[data-id]'); if (!host) return; var d = host.dataset;
-      var on = wish.toggle({ id: d.id, name: d.name, price: +d.price, compare: +d.compare, image: d.image, url: d.url, cat: d.cat, brand: d.brand, sizes: d.sizes || 'S,M,L,XL,XXL', stock: d.stock });
-      return toast(on ? 'Saved to wishlist' : 'Removed from wishlist');
+      var host = el.closest('[data-id]'); if (!host || el.disabled) return;
+      el.disabled = true;
+      wish.toggle(host.dataset.id).then(function (r) { el.disabled = false; if (r.message) toast(r.message, r.ok ? undefined : 'error'); });
+      return;
     }
     if (q('[data-theme-toggle]')) { var dark = document.documentElement.classList.toggle('dark'); try { localStorage.setItem(KEY_THEME, dark ? 'dark' : 'light'); } catch (er) {} return; }
     if (q('[data-chat-toggle]')) { var ch = $('[data-chat]'); ch.classList.toggle('open'); $('[data-chat-toggle]').setAttribute('aria-expanded', ch.classList.contains('open')); return; }
@@ -152,7 +172,6 @@
   var top = $('[data-to-top]');
   function onScroll() { var y = window.scrollY; if (header) header.classList.toggle('is-stuck', y > 8); if (top) top.hidden = y < 600; }
   window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
-  window.addEventListener('storage', function (e) { if (e.key === KEY_WISH) update(); });
 
   window.JBD = { cfg: CFG, cart: cart, wish: wish, toast: toast, fmt: fmt, esc: esc, update: update, openDrawer: openDrawer, closeAll: closeAll, read: read, write: write, done: done, lineHtml: lineHtml };
   update();

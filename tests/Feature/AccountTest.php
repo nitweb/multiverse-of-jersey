@@ -56,7 +56,7 @@ function accountOrder(array $attributes = [], ?Product $product = null): Order
 }
 
 it('keeps the customer pages behind the login', function () {
-    foreach (['index', 'orders', 'profile', 'addresses', 'wishlist'] as $page) {
+    foreach (['index', 'orders', 'returns', 'profile', 'addresses', 'wishlist'] as $page) {
         $this->get(route('account.'.$page))->assertRedirect(route('login'));
     }
 });
@@ -162,4 +162,50 @@ it('saves and removes wishlist items for the signed-in customer only', function 
 
     expect(Wishlist::count())->toBe(0);
     $this->postJson(route('account.wishlist.toggle'), ['product_id' => 99999])->assertUnprocessable();
+});
+
+it('shows the overview with the recent orders and counts', function () {
+    $user = User::factory()->create(['phone' => '01711223344']);
+    $order = accountOrder();
+
+    $this->actingAs($user)
+        ->get(route('account.index'))
+        ->assertOk()
+        ->assertSee($order->number)
+        ->assertSee('Recent orders');
+});
+
+it('lets a customer request a return and lists it on the returns page', function () {
+    $user = User::factory()->create(['phone' => '01711223344']);
+    $order = accountOrder(['status' => 'delivered'], accountProduct());
+    $item = $order->items->first();
+
+    $this->actingAs($user)
+        ->get(route('account.returns.create', $order->number))
+        ->assertOk()
+        ->assertSee($item->name);
+
+    $this->post(route('account.returns.store', $order->number), ['items' => [$item->id], 'qty' => [$item->id => 1], 'reason' => 'changed_mind'])
+        ->assertRedirect(route('account.returns'));
+
+    $this->get(route('account.returns'))->assertOk()->assertSee($order->number)->assertSee('Changed my mind');
+
+    $this->post(route('account.returns.store', $order->number), ['items' => [$item->id], 'qty' => [$item->id => 1]])
+        ->assertSessionHasErrors('reason');
+});
+
+it('keeps the order of another customer out of the return pages', function () {
+    $user = User::factory()->create(['phone' => '01711223344']);
+    $other = accountOrder(['phone' => '01600000000']);
+
+    $this->actingAs($user)->get(route('account.returns.create', $other->number))->assertNotFound();
+});
+
+it('marks the wishlist heart as saved only for the signed-in customer who saved the product', function () {
+    $user = User::factory()->create();
+    $product = accountProduct();
+    $user->wishlists()->create(['product_id' => $product->id]);
+
+    $this->get($product->url)->assertOk()->assertSee('aria-label="Add to wishlist" aria-pressed="false"', false);
+    $this->actingAs($user)->get($product->url)->assertOk()->assertSee('aria-label="Add to wishlist" aria-pressed="true"', false);
 });

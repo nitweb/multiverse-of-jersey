@@ -1,20 +1,21 @@
 <?php
 
+use App\Http\Controllers\Frontend\AboutController;
 use App\Http\Controllers\Frontend\AccountController;
 use App\Http\Controllers\Frontend\AccountOrderController;
+use App\Http\Controllers\Frontend\AccountReturnController;
 use App\Http\Controllers\Frontend\AddressController;
-use App\Http\Controllers\Frontend\AboutController;
 use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\CheckoutController;
 use App\Http\Controllers\Frontend\ContactController;
 use App\Http\Controllers\Frontend\FaqController;
 use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\PrivacyController;
 use App\Http\Controllers\Frontend\ProductController as StorefrontProductController;
-use App\Http\Controllers\Frontend\SearchController;
 use App\Http\Controllers\Frontend\ReturnsController;
+use App\Http\Controllers\Frontend\SearchController;
 use App\Http\Controllers\Frontend\ShippingController;
 use App\Http\Controllers\Frontend\ShopController;
-use App\Http\Controllers\Frontend\PrivacyController;
 use App\Http\Controllers\Frontend\TermsController;
 use App\Http\Controllers\Frontend\TrackController;
 use App\Http\Controllers\Frontend\WishlistController;
@@ -72,6 +73,10 @@ Route::middleware('auth')->prefix('account')->as('account.')->group(function () 
     Route::get('orders/{number}', [AccountOrderController::class, 'show'])->where('number', '(?:MOJ|NM)-\d+')->name('orders.show');
     Route::post('orders/{number}/reorder', [AccountOrderController::class, 'reorder'])->where('number', '(?:MOJ|NM)-\d+')->name('orders.reorder');
 
+    Route::get('returns', [AccountReturnController::class, 'index'])->name('returns');
+    Route::get('orders/{number}/return', [AccountReturnController::class, 'create'])->where('number', '(?:MOJ|NM)-\d+')->name('returns.create');
+    Route::post('orders/{number}/return', [AccountReturnController::class, 'store'])->where('number', '(?:MOJ|NM)-\d+')->middleware('throttle:10,1')->name('returns.store');
+
     Route::get('profile', [AccountController::class, 'profile'])->name('profile');
     Route::patch('profile', [AccountController::class, 'updateProfile'])->name('profile.update');
     Route::put('password', [AccountController::class, 'updatePassword'])->name('password.update');
@@ -93,4 +98,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

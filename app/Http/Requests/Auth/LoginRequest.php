@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Auth;
 
 use App\Models\User;
+use Closure;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -21,9 +22,17 @@ class LoginRequest extends FormRequest
         return true;
     }
 
+    /** The login field holds either a mobile number (01XXXXXXXXX) or an email address. */
     protected function prepareForValidation(): void
     {
-        $this->merge(['phone' => User::normalizePhone($this->input('phone'))]);
+        $login = trim((string) $this->input('login', $this->input('phone')));
+
+        $this->merge(['login' => $this->isEmailLogin($login) ? strtolower($login) : User::normalizePhone($login)]);
+    }
+
+    public function isEmailLogin(?string $login = null): bool
+    {
+        return str_contains($login ?? (string) $this->input('login'), '@');
     }
 
     /**
@@ -34,7 +43,20 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone' => ['required', 'regex:/^01[3-9][0-9]{8}$/'],
+            'login' => [
+                'required',
+                'string',
+                'max:150',
+                function (string $attribute, mixed $value, Closure $fail): void {
+                    $valid = $this->isEmailLogin((string) $value)
+                        ? filter_var($value, FILTER_VALIDATE_EMAIL) !== false
+                        : preg_match('/^01[3-9][0-9]{8}$/', (string) $value) === 1;
+
+                    if (! $valid) {
+                        $fail('Enter a valid mobile number (01XXXXXXXXX) or email address.');
+                    }
+                },
+            ],
             'password' => ['required', 'string'],
         ];
     }
@@ -45,7 +67,7 @@ class LoginRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'phone.regex' => 'Enter a valid mobile number, like 01XXXXXXXXX.',
+            'login.required' => 'Enter your mobile number or email address.',
         ];
     }
 
@@ -55,7 +77,7 @@ class LoginRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'phone' => 'mobile number',
+            'login' => 'mobile number or email',
         ];
     }
 
@@ -68,11 +90,13 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('phone', 'password'), $this->boolean('remember'))) {
+        $field = $this->isEmailLogin() ? 'email' : 'phone';
+
+        if (! Auth::attempt([$field => $this->string('login')->toString(), 'password' => $this->input('password')], $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'phone' => trans('auth.failed'),
+                'login' => trans('auth.failed'),
             ]);
         }
 
@@ -95,7 +119,7 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'phone' => trans('auth.throttle', [
+            'login' => trans('auth.throttle', [
                 'seconds' => $seconds,
                 'minutes' => ceil($seconds / 60),
             ]),
@@ -107,6 +131,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('phone')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->string('login')).'|'.$this->ip());
     }
 }

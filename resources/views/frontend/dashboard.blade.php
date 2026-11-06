@@ -8,6 +8,9 @@
     <meta name="description" content="@yield('meta_description', 'Authentic football jerseys for collectors in Bangladesh. Premier League, La Liga, Serie A, retro and player edition jerseys with cash on delivery all over Bangladesh.')">
     <meta name="theme-color" content="#006a4e">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @hasSection('meta_robots')
+        <meta name="robots" content="@yield('meta_robots')">
+    @endif
 
     <link rel="canonical" href="{{ url()->current() }}">
 
@@ -338,6 +341,12 @@
     <script>
         window.JBD_SERVER = {
             cart: @json(app(\App\Services\CartService::class)->summary()),
+            wish: {
+                auth: @json(auth()->check()),
+                ids: @json($wishlistIds ?? []),
+                toggle: @json(route('account.wishlist.toggle')),
+                login: @json(route('login'))
+            },
             routes: {
                 summary: @json(route('cart.summary')),
                 items: @json(route('cart.items.store')),

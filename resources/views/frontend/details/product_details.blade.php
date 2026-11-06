@@ -191,7 +191,7 @@
                         <svg class="ic " aria-hidden="true"><use href="#i-bag" /></svg> {{ $product->in_stock ? 'Add to cart' : 'Out of stock' }}
                     </button>
 
-                    <button type="button" class="btn btn-ghost btn-lg !px-4 wish-big" data-wish aria-label="Add to wishlist" aria-pressed="false">
+                    <button type="button" class="btn btn-ghost btn-lg !px-4 wish-big" data-wish aria-label="Add to wishlist" aria-pressed="{{ in_array($product->id, $wishlistIds ?? [], true) ? 'true' : 'false' }}">
                         <svg class="ic " aria-hidden="true"><use href="#i-heart" /></svg>
                     </button>
 

@@ -19,6 +19,8 @@ class WishlistController extends Controller
 
         $found = Product::active()
             ->with(['images', 'variants', 'category', 'brand'])
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rating')
             ->whereIn('id', $ids)
             ->get()
             ->keyBy('id');

@@ -37,7 +37,7 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:100'],
             'phone' => ['required', 'regex:/^01[3-9][0-9]{8}$/', 'unique:users,phone'],
             'email' => ['required', 'email', 'max:150', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8', 'max:100'],
+            'password' => ['required', 'string', 'min:8', 'max:100', 'confirmed'],
             'terms' => ['accepted'],
         ], [
             'phone.regex' => 'Enter a valid mobile number, like 01XXXXXXXXX.',

@@ -17,6 +17,7 @@ class AccountOrderController extends Controller
         $status = (string) $request->query('status', '');
 
         $orders = $request->user()->customerOrders()
+            ->with('items.returnItems.orderReturn')
             ->when(array_key_exists($status, Order::STATUSES), fn ($query) => $query->where('status', $status))
             ->latest('id')
             ->paginate(8)

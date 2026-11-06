@@ -47,7 +47,7 @@
                                 <span class="badge bg-ink text-bg">New</span>
                             </div>
 
-                            <button type="button" class="wish-btn" data-wish aria-label="Add to wishlist" aria-pressed="false">
+                            <button type="button" class="wish-btn" data-wish aria-label="Add to wishlist" aria-pressed="{{ in_array($product->id, $wishlistIds ?? [], true) ? 'true' : 'false' }}">
                                 <svg class="ic " aria-hidden="true">
                                     <use href="#i-heart" />
                                 </svg>

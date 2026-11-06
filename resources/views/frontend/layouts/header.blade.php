@@ -50,12 +50,16 @@
 
             <a href="{{ route('track.show') }}" class="nav-link">Track Order</a>
 
-            <a href="about.html" class="nav-link">About</a>
+            <a href="{{ route('about.show') }}" class="nav-link">About</a>
 
-            <a href="contact.html" class="nav-link">Contact</a>
+            <a href="{{ route('contact.show') }}" class="nav-link">Contact</a>
 
             <div class="nav-foot lg:hidden">
-                <a href="login.html" class="btn btn-primary w-full">Login / Register</a>
+                @auth
+                    <a href="{{ route('account.index') }}" class="btn btn-primary w-full">My account</a>
+                @else
+                    <a href="{{ route('login') }}" class="btn btn-primary w-full">Login / Register</a>
+                @endauth
                 <p class="text-xs text-ink/50 mt-3">Cash on Delivery all over Bangladesh</p>
             </div>
 
@@ -83,14 +87,14 @@
                 </span>
             </button>
 
-            <a href="wishlist.html" class="icon-btn relative hidden sm:grid" aria-label="Wishlist">
+            <a href="{{ route('account.wishlist') }}" class="icon-btn relative hidden sm:grid" aria-label="Wishlist">
                 <svg class="ic " aria-hidden="true">
                     <use href="#i-heart" />
                 </svg>
-                <span class="count-badge" data-wish-count hidden>0</span>
+                <span class="count-badge" data-wish-count @if (empty($wishlistIds)) hidden @endif>{{ count($wishlistIds ?? []) }}</span>
             </a>
 
-            <a href="login.html" class="icon-btn" aria-label="Account">
+            <a href="{{ auth()->check() ? route('account.index') : route('login') }}" class="icon-btn" aria-label="{{ auth()->check() ? 'My account' : 'Login' }}">
                 <svg class="ic " aria-hidden="true">
                     <use href="#i-user" />
                 </svg>

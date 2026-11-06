@@ -5,3 +5,23 @@
 .order-row summary{display:flex;align-items:center;gap:12px;padding:18px 20px;cursor:pointer;list-style:none}.order-row summary::-webkit-details-marker{display:none}
 .order-row .chev{transition:transform .2s;color:rgb(var(--color-ink)/.4)}.order-row[open] .chev{transform:rotate(180deg)}
 .bg-success\/10,.bg-danger\/10,.bg-info\/10{}
+.tk-badge.is-approved{background:rgb(var(--color-success)/.12);color:rgb(var(--color-success))}
+.tk-badge.is-rejected{background:rgb(var(--color-danger)/.12);color:rgb(var(--color-danger))}
+.stat{display:block;padding:20px}.stat small{display:block;font-size:13px;color:rgb(var(--color-ink)/.6)}.stat b{display:block;margin-top:4px;font-family:var(--font-display);font-weight:800;font-size:26px;letter-spacing:-.02em}
+a.stat:hover{border-color:rgb(var(--color-primary))}
+.acc-logout{width:100%;background:none;border:0;cursor:pointer;text-align:left;color:rgb(var(--color-danger))}
+.acc-logout:hover{background:rgb(var(--color-danger)/.08);color:rgb(var(--color-danger))}
+.acc-thumb{width:56px;height:56px;border-radius:12px;object-fit:cover;background:rgb(var(--color-bg));flex-shrink:0}
+.acc-thumb.sm{width:44px;height:44px;border-radius:10px}
+.acc-dl{display:grid;gap:10px;margin-top:14px;font-size:14px}.acc-dl div{display:flex;justify-content:space-between;gap:16px}.acc-dl dt{color:rgb(var(--color-ink)/.55)}.acc-dl dd{font-weight:600;text-align:right}
+.acc-total{display:flex;justify-content:space-between;align-items:baseline;border-top:1px dashed rgb(var(--color-line));padding-top:14px;margin-top:4px}
+.acc-sel{display:flex;align-items:center;gap:14px;padding:14px 0}.acc-sel+.acc-sel{border-top:1px dashed rgb(var(--color-line))}.acc-sel.is-off{opacity:.5}
+.acc-sel input[type=checkbox]{width:20px;height:20px;accent-color:rgb(var(--color-primary));flex-shrink:0}
+.acc-sel select.input{height:38px;width:76px;padding:0 10px}
+.acc-addr summary{cursor:pointer;font-weight:700;font-size:14px;color:rgb(var(--color-primary));list-style:none}.acc-addr summary::-webkit-details-marker{display:none}
+.badge-soft{background:rgb(var(--color-primary-soft));color:rgb(var(--color-primary))}
+.badge-def{background:rgb(var(--color-success)/.12);color:rgb(var(--color-success))}
+.tk-badge.flat{margin-top:0}
+.pagination.tight{margin-top:8px}
+.acc-sep{margin-top:16px;padding-top:16px;border-top:1px solid rgb(var(--color-line))}
+.acc-sel label{cursor:pointer}

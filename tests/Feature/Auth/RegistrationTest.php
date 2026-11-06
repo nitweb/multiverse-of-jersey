@@ -14,6 +14,7 @@ test('new users can register with a mobile number', function () {
         'phone' => '01811223344',
         'email' => 'test@example.com',
         'password' => 'password',
+        'password_confirmation' => 'password',
         'terms' => '1',
     ]);
 
@@ -31,9 +32,23 @@ test('a mobile number that already has an account cannot register again', functi
         'phone' => '+8801811223344',
         'email' => 'other@example.com',
         'password' => 'password',
+        'password_confirmation' => 'password',
         'terms' => '1',
     ])->assertSessionHasErrors(['phone' => 'This mobile number already has an account. Please sign in.']);
 
     $this->assertGuest();
     expect(User::count())->toBe(1);
+});
+
+test('the two passwords must match', function () {
+    $this->post('/register', [
+        'name' => 'Test User',
+        'phone' => '01811223344',
+        'email' => 'test@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'different',
+        'terms' => '1',
+    ])->assertSessionHasErrors('password');
+
+    $this->assertGuest();
 });
