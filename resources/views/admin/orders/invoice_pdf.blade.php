@@ -6,10 +6,10 @@
     $store = Setting::get('store_name') ?: config('app.name');
     $logoSetting = Setting::get('logo_header');
     $logoPath = $logoSetting ? public_path(ltrim($logoSetting, '/')) : null;
-    $logo = $logoPath && is_file($logoPath) ? $logoPath : null;
+    $logo = $logoPath && is_file($logoPath) ? $logoPath : public_path('assets/frontend/img/logo.png');
     $hexOr = fn ($v, $d) => preg_match('/^#[0-9a-fA-F]{6}$/', (string) $v) ? $v : $d;
-    $accent = $hexOr(Setting::get('color_primary'), '#0B3A8C');
-    $gold = $hexOr(Setting::get('color_accent'), '#F5A800');
+    $accent = '#006A4E';
+    $gold = '#E22138';
     $ink = $hexOr(Setting::get('color_text'), '#1a2238');
     $mixHex = function (string $from, string $to, float $amount): string {
         $a = sscanf($from, '#%02x%02x%02x');
@@ -45,22 +45,22 @@
         body { margin: 0; font-family: 'Inter', sans-serif; font-size: 12px; line-height: 1.3; color: {{ $ink }}; }
         table { border-collapse: collapse; }
         .tk { font-family: 'NotoBn', 'Inter', sans-serif; }
-        .muted { color: #6b7388; }
+        .muted { color: #5f6f68; }
         .disp { font-family: 'Jakarta', 'Inter', sans-serif; font-weight: bold; }
-        .eyebrow { font-size: 9px; letter-spacing: 1.2px; text-transform: uppercase; color: #6b7388; font-weight: bold; }
+        .eyebrow { font-size: 9px; letter-spacing: 1.2px; text-transform: uppercase; color: #5f6f68; font-weight: bold; }
 
         .sheet { height: 1040px; overflow: hidden; }
         .hero { height: 150px; padding: 30px 48px 0 48px; color: #fff; background-color: {{ $accent }}; @if ($heroImage) background-image: url('{{ $heroImage }}'); background-size: 100% 100%; background-repeat: no-repeat; @endif }
         .hero td { vertical-align: top; }
         .store { font-size: 22px; line-height: 1.2; }
-        .hero .sub { font-size: 11px; color: #e3e9f6; margin-top: 1px; }
+        .hero .sub { font-size: 11px; color: #dff0e8; margin-top: 1px; }
         .inv { font-size: 30px; line-height: 1; letter-spacing: 5.4px; text-align: right; }
-        .no { display: inline-block; background-color: {{ $gold }}; color: #1a1a1a; font-weight: bold; font-size: 11.5px; padding: 4px 13px; border-radius: 13px; }
+        .no { display: inline-block; background-color: {{ $gold }}; color: #ffffff; font-weight: bold; font-size: 11.5px; padding: 4px 13px; border-radius: 13px; }
         .logo { display: inline-block; background-color: #fff; border-radius: 14px; padding: 8px 14px; }
 
-        .metacard { margin: -34px 48px 0 48px; background-color: #fff; border: 1px solid #e6eaf3; border-radius: 16px; }
+        .metacard { margin: -34px 48px 0 48px; background-color: #fff; border: 1px solid #e1ebe6; border-radius: 16px; }
         .meta { width: 100%; }
-        .meta td { width: 25%; padding: 10px 16px; border-right: 1px solid #e6eaf3; vertical-align: top; }
+        .meta td { width: 25%; padding: 10px 16px; border-right: 1px solid #e1ebe6; vertical-align: top; }
         .meta td.last { border-right: 0; }
         .meta .val { margin-top: 2px; font-size: 12.5px; font-weight: bold; }
         .pill { display: inline-block; padding: 2px 10px; border-radius: 9px; font-size: 10px; font-weight: bold; letter-spacing: .66px; text-transform: uppercase; background-color: {{ $dueBg }}; color: {{ $dueFg }}; }
@@ -68,7 +68,7 @@
         .body { padding: 18px 48px 0 48px; }
         .infowrap { margin: 0 -14px; }
         .info { width: 100%; border-collapse: separate; border-spacing: 14px 0; }
-        .info td { width: 33.33%; vertical-align: top; background-color: #f5f7fc; border: 1px solid #e6eaf3; border-radius: 12px; padding: 10px 14px; }
+        .info td { width: 33.33%; vertical-align: top; background-color: #f4f9f6; border: 1px solid #e1ebe6; border-radius: 12px; padding: 10px 14px; }
         .info .h { font-size: 9.5px; letter-spacing: 1.1px; text-transform: uppercase; color: {{ $accent }}; font-weight: bold; margin-bottom: 5px; }
         .strong { font-size: 13px; }
 
@@ -76,28 +76,28 @@
         .items { width: 637px; border-collapse: separate; border-spacing: 0; }
         .items th { color: #fff; font-size: 9.5px; letter-spacing: .9px; text-transform: uppercase; text-align: left; padding: 9px 10px; }
         .items th.r, .items td.r { text-align: right; }
-        .items td { padding: 9px 10px; border-bottom: 1px solid #e6eaf3; vertical-align: top; }
+        .items td { padding: 9px 10px; border-bottom: 1px solid #e1ebe6; vertical-align: top; }
         .idx { width: 24px; height: 19px; padding-top: 5px; line-height: 13px; text-align: center; border-radius: 8px; background-color: {{ $accentTint }}; color: {{ $accent }}; font-weight: bold; font-size: 11px; }
-        .item-meta { color: #6b7388; font-size: 10.5px; margin-top: 1px; }
+        .item-meta { color: #5f6f68; font-size: 10.5px; margin-top: 1px; }
 
         .lower { width: 637px; margin-top: 16px; table-layout: fixed; }
         .lower td { vertical-align: top; }
         .notes .eyebrow { margin-bottom: 6px; }
         .notes p { margin: 0 0 10px 0; }
-        .totals { background-color: #f5f7fc; border: 1px solid #e6eaf3; border-radius: 14px; padding: 8px 14px; }
+        .totals { background-color: #f4f9f6; border: 1px solid #e1ebe6; border-radius: 14px; padding: 8px 14px; }
         .totals table { width: 100%; }
         .totals td { padding: 3px 0; }
         .totals td.r { text-align: right; }
-        .totals tr.grand td { padding-top: 8px; border-top: 2px dashed #e6eaf3; font-size: 15px; }
+        .totals tr.grand td { padding-top: 8px; border-top: 2px dashed #e1ebe6; font-size: 15px; }
         .totals tr.grand td.r { color: {{ $accent }}; }
         .due { margin-top: 8px; padding: 9px 14px; border-radius: 12px; background-color: {{ $dueBg }}; color: {{ $dueFg }}; font-size: 12px; }
         .due table { width: 100%; }
         .due td.r { text-align: right; }
 
-        .foot { margin-top: 16px; border-top: 1px solid #e6eaf3; padding-top: 12px; width: 637px; }
-        .foot td { vertical-align: middle; color: #6b7388; font-size: 10.5px; }
+        .foot { margin-top: 16px; border-top: 1px solid #e1ebe6; padding-top: 12px; width: 637px; }
+        .foot td { vertical-align: middle; color: #5f6f68; font-size: 10.5px; }
         .thanks { color: {{ $ink }}; font-size: 13px; margin-bottom: 2px; }
-        .qrimg { width: 58px; height: 58px; border: 1px solid #e6eaf3; border-radius: 10px; padding: 4px; background-color: #fff; }
+        .qrimg { width: 58px; height: 58px; border: 1px solid #e1ebe6; border-radius: 10px; padding: 4px; background-color: #fff; }
         .bar { margin-top: 14px; height: 6px; background-color: {{ $accent }}; @if ($barImage) background-image: url('{{ $barImage }}'); background-size: 100% 100%; background-repeat: no-repeat; @endif }
         .stamp { display: inline-block; margin-top: 8px; color: #ffd9d9; font-size: 12px; font-weight: bold; letter-spacing: 2px; border: 2px solid #ffd9d9; padding: 2px 10px; border-radius: 6px; }
     </style>
@@ -182,8 +182,8 @@
             <tbody>
                 @foreach ($order->items as $item)
                     <tr>
-                        <td width="6%" @if ($loop->even) style="background-color:#fafbfe" @endif><div class="idx">{{ $loop->iteration }}</div></td>
-                        <td width="55%" @if ($loop->even) style="background-color:#fafbfe" @endif>
+                        <td width="6%" @if ($loop->even) style="background-color:#f8fbf9" @endif><div class="idx">{{ $loop->iteration }}</div></td>
+                        <td width="55%" @if ($loop->even) style="background-color:#f8fbf9" @endif>
                             <div style="font-weight:bold;">{{ $item->name }}</div>
                             @if ($item->variant_label || $item->sku)
                                 <div class="item-meta">
@@ -193,9 +193,9 @@
                                 </div>
                             @endif
                         </td>
-                        <td class="r" width="16%" @if ($loop->even) style="background-color:#fafbfe" @endif>{!! $money($item->unit_price) !!}</td>
-                        <td class="r" width="7%" @if ($loop->even) style="background-color:#fafbfe" @endif>{{ $item->quantity }}</td>
-                        <td class="r" width="16%" @if ($loop->even) style="background-color:#fafbfe" @endif><b>{!! $money($item->line_total) !!}</b></td>
+                        <td class="r" width="16%" @if ($loop->even) style="background-color:#f8fbf9" @endif>{!! $money($item->unit_price) !!}</td>
+                        <td class="r" width="7%" @if ($loop->even) style="background-color:#f8fbf9" @endif>{{ $item->quantity }}</td>
+                        <td class="r" width="16%" @if ($loop->even) style="background-color:#f8fbf9" @endif><b>{!! $money($item->line_total) !!}</b></td>
                     </tr>
                 @endforeach
             </tbody>

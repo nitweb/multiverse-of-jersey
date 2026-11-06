@@ -39,7 +39,7 @@
             <div class="os-hero">
 
                 <div class="os-check">
-                    <svg class="ic w-10 h-10" style="stroke-width:3" aria-hidden="true"><use href="#i-check" /></svg>
+                    <svg class="ic w-8 h-8" aria-hidden="true"><use href="#i-check" /></svg>
                 </div>
 
                 <h1>Thank you, {{ $firstName }}! Your order is placed.</h1>

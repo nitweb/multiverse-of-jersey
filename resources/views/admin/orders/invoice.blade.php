@@ -4,10 +4,10 @@
     $tz = Setting::tz();
     $money = fn ($n) => '৳'.number_format((float) $n, 2);
     $store = Setting::get('store_name') ?: config('app.name');
-    $logo = Setting::get('logo_header') ? asset(Setting::get('logo_header')) : null;
+    $logo = Setting::get('logo_header') ? asset(Setting::get('logo_header')) : asset('assets/frontend/img/logo.png');
     $hexOr = fn ($v, $d) => preg_match('/^#[0-9a-fA-F]{6}$/', (string) $v) ? $v : $d;
-    $accent = $hexOr(Setting::get('color_primary'), '#0B3A8C');
-    $gold = $hexOr(Setting::get('color_accent'), '#F5A800');
+    $accent = '#006A4E';
+    $gold = '#E22138';
     $inkColor = $hexOr(Setting::get('color_text'), '#1a2238');
     $stacks = [
         'Plus Jakarta Sans' => "'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', 'Noto Sans Bengali', sans-serif",
@@ -41,10 +41,10 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700|plus-jakarta-sans:600,700,800&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: {{ $accent }}; --accent-dark: {{ $accentDark }}; --accent-light: {{ $accentLight }}; --accent-tint: {{ $accentTint }}; --gold: {{ $gold }}; --ink: {{ $inkColor }}; --muted: #6b7388; --line: #e6eaf3; --soft: #f5f7fc; --display: {!! $fontHeading !!}; --body: {!! $fontBody !!}; }
+        :root { --accent: {{ $accent }}; --accent-dark: {{ $accentDark }}; --accent-light: {{ $accentLight }}; --accent-tint: {{ $accentTint }}; --gold: {{ $gold }}; --ink: {{ $inkColor }}; --muted: #5f6f68; --line: #e1ebe6; --soft: #f4f9f6; --display: {!! $fontHeading !!}; --body: {!! $fontBody !!}; }
         * { box-sizing: border-box; }
         html, body { margin: 0; padding: 0; }
-        body { font-family: var(--body); color: var(--ink); background: #e9edf5; font-size: 13px; line-height: 1.55; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        body { font-family: var(--body); color: var(--ink); background: #e6f0eb; font-size: 13px; line-height: 1.55; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .toolbar { max-width: 794px; margin: 18px auto 0; display: flex; justify-content: flex-end; gap: 10px; padding: 0 8px; }
         .toolbar button, .toolbar a { font: inherit; font-weight: 600; padding: 9px 18px; border-radius: 12px; border: 1px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; text-decoration: none; }
         .toolbar .primary { background: linear-gradient(135deg, var(--accent), var(--accent-dark)); border-color: transparent; color: #fff; }
@@ -59,7 +59,7 @@
         .brand p { margin: 2px 0 0; opacity: .85; max-width: 300px; font-size: 12px; }
         .doc { text-align: right; }
         .doc h1 { margin: 0; font-family: var(--display); font-size: 34px; letter-spacing: .16em; font-weight: 800; line-height: 1; }
-        .doc .no { display: inline-block; margin-top: 10px; padding: 5px 14px; border-radius: 999px; background: var(--gold); color: #1a1a1a; font-weight: 800; font-size: 12.5px; letter-spacing: .04em; }
+        .doc .no { display: inline-block; margin-top: 10px; padding: 5px 14px; border-radius: 999px; background: var(--gold); color: #fff; font-weight: 800; font-size: 12.5px; letter-spacing: .04em; }
         .pill { display: inline-block; padding: 2px 12px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
         .pill.paid { background: #dcf5e8; color: #0f7a46; }
         .pill.unpaid { background: #fff0d1; color: #9a5b00; }
@@ -81,7 +81,7 @@
         table.items thead th:last-child { border-radius: 0 10px 10px 0; }
         table.items th.r, table.items td.r { text-align: right; }
         table.items td { padding: 13px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
-        table.items tbody tr:nth-child(even) td { background: #fafbfe; }
+        table.items tbody tr:nth-child(even) td { background: #f8fbf9; }
         table.items tr { page-break-inside: avoid; }
         .idx { display: inline-flex; width: 24px; height: 24px; align-items: center; justify-content: center; border-radius: 8px; background: var(--accent-tint); color: var(--accent); font-weight: 800; font-size: 11px; }
         .item-name { font-weight: 700; }
