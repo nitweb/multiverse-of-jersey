@@ -28,7 +28,12 @@ class CheckoutController extends Controller
         return view('frontend.checkout.index', [
             'user' => $user,
             'addresses' => $addresses,
-            'prefill' => $addresses->first(),
+            'prefill' => $addresses->firstWhere('is_default', true) ?? $addresses->first(),
+            'cartSummary' => $this->cart->summary(),
+            'divisions' => config('locations.divisions'),
+            'zoneOfDistrict' => collect(CheckoutService::districts())
+                ->mapWithKeys(fn (string $district) => [$district => CheckoutService::zoneOf($district)])
+                ->all(),
         ]);
     }
 
@@ -39,7 +44,13 @@ class CheckoutController extends Controller
         }
 
         try {
-            $order = $this->checkout->place($request->safe()->only(['name', 'phone', 'email', 'district', 'area', 'address', 'note']));
+            $data = $request->safe()->only(['name', 'phone', 'email', 'district', 'area', 'address', 'note']);
+
+            if ($postcode = trim((string) $request->input('postcode'))) {
+                $data['address'] = $data['address'].', '.$postcode;
+            }
+
+            $order = $this->checkout->place($data);
         } catch (DomainException $e) {
             return back()->withInput()->withErrors(['cart' => $e->getMessage()]);
         }

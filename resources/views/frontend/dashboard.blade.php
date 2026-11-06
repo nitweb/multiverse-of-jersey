@@ -7,6 +7,7 @@
     <title>@yield('frontend_title')</title>
     <meta name="description" content="@yield('meta_description', 'Authentic football jerseys for collectors in Bangladesh. Premier League, La Liga, Serie A, retro and player edition jerseys with cash on delivery all over Bangladesh.')">
     <meta name="theme-color" content="#006a4e">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <link rel="canonical" href="{{ url()->current() }}">
 
@@ -264,8 +265,8 @@
             </div>
             <p class="text-xs text-ink/50">Delivery charge is calculated at checkout.</p>
             <div class="grid grid-cols-2 gap-3">
-                <a href="cart.html" class="btn btn-ghost">View cart</a>
-                <a href="checkout.html" class="btn btn-primary">Checkout</a>
+                <a href="{{ route('cart.index') }}" class="btn btn-ghost">View cart</a>
+                <a href="{{ route('checkout.show') }}" class="btn btn-primary" data-drawer-checkout>Checkout</a>
             </div>
         </div>
     </aside>
@@ -334,6 +335,22 @@
 
     <div id="toasts" class="toasts" aria-live="polite"></div>
 
+    <script>
+        window.JBD_SERVER = {
+            cart: @json(app(\App\Services\CartService::class)->summary()),
+            routes: {
+                summary: @json(route('cart.summary')),
+                items: @json(route('cart.items.store')),
+                itemBase: @json(url('/cart/items')),
+                clear: @json(route('cart.clear')),
+                coupon: @json(route('cart.coupon.apply')),
+                couponRemove: @json(route('cart.coupon.remove')),
+                zone: @json(route('cart.zone')),
+                cart: @json(route('cart.index')),
+                shop: @json(route('shop'))
+            }
+        };
+    </script>
     <script src="{{ asset('assets/frontend/js/common.js') }}" defer></script>
     <script src="{{ asset('assets/frontend/js/pages/home.js') }}" defer></script>
     @stack('frontend_scripts')

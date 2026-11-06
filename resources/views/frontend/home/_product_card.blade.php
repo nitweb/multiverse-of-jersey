@@ -6,9 +6,10 @@
     $rating = (int) round((float) ($product->reviews_avg_rating ?? 0));
     $sizes = $product->variants->pluck('size')->filter()->unique()->implode(',');
     $typeLabel = $product->is_new ? 'New' : $product->category?->name;
+    $variantData = $product->variants->map(fn ($v) => ['id' => $v->id, 'label' => collect([$v->size, $v->color])->filter()->implode(' · '), 'price' => (float) ($v->price ?? $product->price), 'stock' => (int) $v->stock])->values();
 @endphp
 
-<article class="pcard group" data-id="{{ $product->id }}" data-name="{{ $product->name }}" data-price="{{ $product->display_price }}" data-compare="{{ $oldPrice ?? 0 }}" data-image="{{ $frontImage }}" data-url="{{ $product->url }}" data-cat="{{ $product->category?->slug }}" data-brand="{{ $product->brand?->name }}" data-sizes="{{ $sizes ?: 'S,M,L,XL,XXL' }}" data-stock="{{ $product->stock_total }}" data-added="{{ $product->id }}" data-sold="{{ $product->sold_count }}">
+<article class="pcard group" data-id="{{ $product->id }}" data-name="{{ $product->name }}" data-price="{{ $product->display_price }}" data-compare="{{ $oldPrice ?? 0 }}" data-image="{{ $frontImage }}" data-url="{{ $product->url }}" data-cat="{{ $product->category?->slug }}" data-brand="{{ $product->brand?->name }}" data-sizes="{{ $sizes ?: 'S,M,L,XL,XXL' }}" data-variants='@json($variantData)' data-stock="{{ $product->stock_total }}" data-added="{{ $product->id }}" data-sold="{{ $product->sold_count }}">
 
     <div class="pcard-img">
 

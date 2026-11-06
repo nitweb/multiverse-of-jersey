@@ -23,6 +23,11 @@ class CartService
 
     private const SESSION_KEY = 'cart';
 
+    /** Optional jersey add-ons, priced here so the browser can never set them. */
+    public const PATCH_PRICE = 200;
+
+    public const CUSTOM_PRICE = 250;
+
     /** @var list<string> */
     private array $notices = [];
 
@@ -40,7 +45,7 @@ class CartService
     // ───────────────────────────── actions ─────────────────────────────
 
     /** @throws DomainException */
-    public function add(int $productId, ?int $variantId, int $quantity = 1): string
+    public function add(int $productId, ?int $variantId, int $quantity = 1, array $options = []): string
     {
         if (Setting::get('store_open') !== '1') {
             throw new DomainException('The store is closed right now. Please try again later.');
@@ -59,6 +64,7 @@ class CartService
             throw new DomainException('Sorry, this item is out of stock.');
         }
 
+        $options = $this->cleanOptions($options);
         $key = self::makeKey($product->id, $variant?->id ?? 0);
         $current = $this->items()[$key] ?? 0;
         $wanted = $current + max(1, $quantity);
@@ -68,6 +74,7 @@ class CartService
         }
 
         $this->writeQuantity($key, min($wanted, $max));
+        $this->writeOptions($key, $options);
         $this->forgetMemo();
 
         return $wanted > $max
@@ -163,9 +170,11 @@ class CartService
 
                 $total = min(self::MAX_QUANTITY, (int) $quantity + (int) ($existing[$key]->quantity ?? 0));
 
+                $guestOptions = $guest['options'][$key] ?? null;
+
                 CartItem::updateOrCreate(
                     ['cart_id' => $cart->id, 'product_id' => $parsed[0], 'variant_id' => $parsed[1]],
-                    ['quantity' => $total],
+                    ['quantity' => $total] + ($guestOptions ? ['options' => $guestOptions] : []),
                 );
             }
 
@@ -312,6 +321,7 @@ class CartService
             ->all();
 
         $products = Product::active()->whereIn('id', $productIds)->with(['images', 'variants'])->get()->keyBy('id');
+        $optionsMap = $this->optionsMap();
         $lines = [];
 
         foreach ($stored as $key => $quantity) {
@@ -349,9 +359,12 @@ class CartService
                 $this->notices[] = "Only {$max} of {$product->name} available, so the quantity was updated.";
             }
 
-            $unit = (float) ($variant?->price ?? $product->price);
+            $options = $optionsMap[$key] ?? [];
+            $addon = $this->addonPrice($options);
+            $base = (float) ($variant?->price ?? $product->price);
+            $unit = $base + $addon;
             $reference = (float) ($product->compare_price ?? 0);
-            $old = $reference > $unit ? $reference : null;
+            $old = $reference > $base ? $reference + $addon : null;
 
             $lines[] = [
                 'key' => $key,
@@ -361,7 +374,8 @@ class CartService
                 'name' => $product->name,
                 'url' => $product->url,
                 'image' => $product->cover_url,
-                'variant' => $variant ? $this->variantLabel($variant) : null,
+                'variant' => $this->lineLabel($variant, $options),
+                'options' => $options,
                 'quantity' => $quantity,
                 'max_quantity' => $max,
                 'unit_price' => $unit,
@@ -399,6 +413,50 @@ class CartService
         }
 
         return max(0, $max);
+    }
+
+    /** @return array{patch?: bool, name?: string, number?: int} */
+    private function cleanOptions(array $options): array
+    {
+        $clean = [];
+
+        if (! empty($options['patch'])) {
+            $clean['patch'] = true;
+        }
+
+        $name = trim(strip_tags((string) ($options['custom_name'] ?? '')));
+
+        if ($name !== '') {
+            $number = $options['custom_number'] ?? null;
+
+            if (! is_numeric($number) || (int) $number < 0 || (int) $number > 99) {
+                throw new DomainException('Enter a custom number between 0 and 99.');
+            }
+
+            $clean['name'] = mb_strtoupper(mb_substr($name, 0, 20));
+            $clean['number'] = (int) $number;
+        }
+
+        return $clean;
+    }
+
+    private function addonPrice(array $options): float
+    {
+        return (float) (
+            (! empty($options['patch']) ? self::PATCH_PRICE : 0)
+            + (isset($options['name']) ? self::CUSTOM_PRICE : 0)
+        );
+    }
+
+    private function lineLabel(?ProductVariant $variant, array $options): ?string
+    {
+        $parts = array_filter([
+            $variant ? $this->variantLabel($variant) : null,
+            ! empty($options['patch']) ? 'UCL patch' : null,
+            isset($options['name']) ? 'Name: '.$options['name'].' #'.$options['number'] : null,
+        ]);
+
+        return $parts ? implode(' / ', $parts) : null;
     }
 
     private function variantLabel(ProductVariant $variant): string
@@ -454,6 +512,39 @@ class CartService
         }
 
         session()->forget(self::SESSION_KEY.'.items.'.$key);
+        session()->forget(self::SESSION_KEY.'.options.'.$key);
+    }
+
+    /** @return array<string, array<string, mixed>> add-ons per cart line key */
+    private function optionsMap(): array
+    {
+        if (auth()->check()) {
+            return $this->databaseCart()?->items
+                ->mapWithKeys(fn (CartItem $item) => [self::makeKey($item->product_id, $item->variant_id) => $item->options ?? []])
+                ->all() ?? [];
+        }
+
+        return (array) session(self::SESSION_KEY.'.options', []);
+    }
+
+    private function writeOptions(string $key, array $options): void
+    {
+        if (auth()->check()) {
+            [$productId, $variantId] = self::parseKey($key);
+
+            if ($cart = Cart::where('user_id', auth()->id())->first()) {
+                $cart->items()->where('product_id', $productId)->where('variant_id', $variantId)
+                    ->update(['options' => $options ? json_encode($options) : null]);
+            }
+
+            $this->databaseCart(fresh: true);
+
+            return;
+        }
+
+        $options
+            ? session()->put(self::SESSION_KEY.'.options.'.$key, $options)
+            : session()->forget(self::SESSION_KEY.'.options.'.$key);
     }
 
     private function readMeta(string $field): ?string

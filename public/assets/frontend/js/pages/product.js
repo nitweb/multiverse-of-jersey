@@ -60,20 +60,20 @@
     if (hasSize && !s) { $('#size-err').hidden = false; $('#sizes').scrollIntoView({ behavior: 'smooth', block: 'center' }); return null; }
     if (hasColor && !c) { $('#color-err').hidden = false; $('#colors').scrollIntoView({ behavior: 'smooth', block: 'center' }); return null; }
     if (variants.length && !v) { JBD.toast('This option is not available', 'error'); return null; }
-    var d = prod.dataset, opt = [];
+    var options = {};
     if (cust.checked) {
       var n = cname.value.trim(), x = cnum.value.trim();
       $('#c-name-err').textContent = n ? '' : 'Enter the custom name.'; $('#c-num-err').textContent = x !== '' && +x >= 0 && +x <= 99 ? '' : 'Enter a number (0–99).';
       if (!n || x === '' || +x < 0 || +x > 99) { cname.scrollIntoView({ behavior: 'smooth', block: 'center' }); return null; }
-      opt.push('Name: ' + n.toUpperCase() + ' #' + x);
+      options.custom_name = n; options.custom_number = +x;
     }
-    if (patch.checked) opt.unshift('UCL patch');
-    var label = [s, c].filter(Boolean).join(' · ') || 'Standard';
-    return { id: d.id, opt: opt.join(' · '), name: d.name, price: unit(), compare: d.compare, image: d.image, url: d.url, size: label, qty: +qty.value };
+    if (patch.checked) options.patch = true;
+    return { product_id: +prod.dataset.id, variant_id: v ? v.id : null, quantity: +qty.value, options: options };
   }
   var addBtn = $('#add-cart'), buyBtn = $('#buy-now');
-  addBtn.addEventListener('click', function () { if (addBtn.disabled) return; var i = item(); if (!i) return; JBD.cart.add(i); JBD.toast('Added to cart'); JBD.openDrawer(); });
-  if (buyBtn) buyBtn.addEventListener('click', function () { var i = item(); if (!i) return; JBD.cart.add(i); location.href = prod.dataset.checkout; });
+  function busy(on) { [addBtn, buyBtn].forEach(function (b) { if (b) b.disabled = on; }); }
+  addBtn.addEventListener('click', function () { if (addBtn.disabled) return; var i = item(); if (!i) return; busy(true); JBD.cart.add(i).then(function (r) { busy(false); JBD.done(r, 'Added to cart'); if (r.ok) JBD.openDrawer(); }); });
+  if (buyBtn) buyBtn.addEventListener('click', function () { if (buyBtn.disabled) return; var i = item(); if (!i) return; busy(true); JBD.cart.add(i).then(function (r) { if (!r.ok) { busy(false); return JBD.done(r); } location.href = (r.cart && r.cart.checkout_url) || prod.dataset.checkout; }); });
 
   function tab(n) { $$('[data-tab-btn]').forEach(function (b) { b.classList.toggle('is-active', b.dataset.tabBtn === n); }); $$('[data-tab-panel]').forEach(function (p) { var on = p.dataset.tabPanel === n; p.hidden = !on; p.classList.toggle('is-active', on); }); }
   $$('[data-tab-btn]').forEach(function (b) { b.addEventListener('click', function () { tab(b.dataset.tabBtn); }); });

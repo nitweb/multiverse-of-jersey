@@ -36,12 +36,17 @@ class CartController extends Controller
             'product_id' => ['required', 'integer'],
             'variant_id' => ['nullable', 'integer'],
             'quantity' => ['nullable', 'integer', 'min:1', 'max:'.CartService::MAX_QUANTITY],
+            'options' => ['nullable', 'array'],
+            'options.patch' => ['nullable', 'boolean'],
+            'options.custom_name' => ['nullable', 'string', 'max:20'],
+            'options.custom_number' => ['nullable', 'integer', 'min:0', 'max:99'],
         ]);
 
         return $this->attempt(fn () => $this->cart->add(
             (int) $data['product_id'],
             isset($data['variant_id']) ? (int) $data['variant_id'] : null,
             (int) ($data['quantity'] ?? 1),
+            $data['options'] ?? [],
         ));
     }
 

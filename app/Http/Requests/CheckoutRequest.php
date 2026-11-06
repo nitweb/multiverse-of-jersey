@@ -37,6 +37,7 @@ class CheckoutRequest extends FormRequest
             'district' => ['required', Rule::in(CheckoutService::districts())],
             'area' => ['required', 'string', 'max:120'],
             'address' => ['required', 'string', 'max:500'],
+            'postcode' => ['nullable', 'string', 'max:10'],
             'note' => ['nullable', 'string', 'max:500'],
             'pay' => ['required', Rule::in(['cod'])],
             'terms' => ['accepted'],
