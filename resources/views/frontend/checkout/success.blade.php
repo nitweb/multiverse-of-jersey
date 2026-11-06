@@ -2,6 +2,14 @@
 
 @php
     $storeName = $setting('store_name', 'Multiverse of Jersey');
+    $firstName = \Illuminate\Support\Str::before($order->name, ' ');
+    $reached = match ($order->status) {
+        'processing' => 2,
+        'shipped', 'out_for_delivery' => 3,
+        'delivered' => 4,
+        default => 1,
+    };
+    $steps = ['Order placed', 'Confirmed', 'On the way', 'Delivered'];
 @endphp
 
 @section('frontend_title', 'Order placed | '.$storeName)
@@ -12,79 +20,128 @@
     <link rel="stylesheet" href="{{ asset('assets/frontend/css/pages/checkout.css') }}">
 @endpush
 
+@push('frontend_scripts')
+    <script>
+        document.addEventListener('click', function (e) {
+            var b = e.target.closest('[data-copy-order]'); if (!b) return;
+            try { navigator.clipboard.writeText(b.dataset.copyOrder); } catch (er) {}
+            var t = b.querySelector('span'), old = t.textContent; t.textContent = 'Copied'; setTimeout(function () { t.textContent = old; }, 1600);
+        });
+    </script>
+@endpush
+
 @section('frontend_contents')
 
-    <section class="section">
+    <section class="section !pt-8">
 
-        <div class="container-x max-w-3xl">
+        <div class="container-x max-w-5xl">
 
-            <div class="card p-6 sm:p-10 text-center">
+            <div class="os-hero">
 
-                <div class="success-ic">
-                    <svg class="ic w-10 h-10" aria-hidden="true"><use href="#i-check" /></svg>
+                <div class="os-check">
+                    <svg class="ic w-10 h-10" style="stroke-width:3" aria-hidden="true"><use href="#i-check" /></svg>
                 </div>
 
-                <h1 class="font-display font-extrabold text-3xl mt-6">Thank you! Order placed.</h1>
-                <p class="text-ink/60 mt-2">We’ve received your order and will confirm it by phone shortly.</p>
+                <h1>Thank you, {{ $firstName }}! Your order is placed.</h1>
+                <p>We’ve received your order and will call {{ $order->phone }} shortly to confirm it. Keep your phone nearby.</p>
 
-                <div class="inline-flex flex-col sm:flex-row gap-x-8 gap-y-2 mt-6 text-sm rounded-2xl bg-bg border border-line px-6 py-4">
-                    <span>Order no. <b class="font-display text-base">{{ $order->number }}</b></span>
-                    <span>Total <b class="font-display text-base">৳{{ number_format($order->total) }}</b></span>
-                    <span>Payment <b>Cash on delivery</b></span>
+                <div class="os-number">
+                    <span><small>Order number</small><br><b>{{ $order->number }}</b></span>
+                    <button type="button" class="os-copy" data-copy-order="{{ $order->number }}">
+                        <svg class="ic w-4 h-4" aria-hidden="true"><use href="#i-share" /></svg><span>Copy</span>
+                    </button>
                 </div>
 
-                @if (session('new_account') && ! auth()->check())
-                    <p class="mt-5 text-sm text-left rounded-xl bg-accent-soft text-ink/80 p-4">
-                        We created an account for you. Sign in with <b>{{ $order->phone }}</b> and the password <b>{{ \App\Services\CheckoutService::startingPassword($order->phone) }}</b> to see all your orders. You can change the password after signing in.
-                    </p>
-                @endif
+            </div>
 
-                <div class="text-left mt-8 grid sm:grid-cols-2 gap-6">
+            <div class="os-stats">
+                <div class="os-stat"><small>Date</small><b>{{ $order->created_at->format('d M Y') }}</b></div>
+                <div class="os-stat"><small>Total</small><b>৳{{ number_format($order->total) }}</b></div>
+                <div class="os-stat"><small>Payment</small><b>Cash on delivery</b></div>
+                <div class="os-stat"><small>Estimated delivery</small><b>{{ $order->delivery_time ?: 'We’ll confirm by phone' }}</b></div>
+            </div>
 
-                    <div>
-                        <h2 class="font-display font-bold mb-3">Items</h2>
-                        <div class="space-y-3">
-                            @foreach ($order->items as $item)
-                                <div class="flex items-center gap-3">
-                                    <span class="relative shrink-0">
-                                        <img src="{{ $item->image }}" alt="" class="w-14 h-14 rounded-xl object-cover bg-bg">
-                                        <i class="absolute -top-2 -right-2 min-w-5 h-5 px-1 rounded-full bg-ink text-bg text-[11px] font-bold grid place-items-center not-italic">{{ $item->quantity }}</i>
-                                    </span>
-                                    <div class="min-w-0 flex-1">
-                                        <p class="text-sm font-semibold leading-snug line-clamp-2">{{ $item->name }}</p>
-                                        @if ($item->variant_label)
-                                            <p class="text-xs text-ink/50">{{ $item->variant_label }}</p>
-                                        @endif
-                                    </div>
-                                    <b class="text-sm">৳{{ number_format($item->line_total) }}</b>
-                                </div>
-                            @endforeach
+            <div class="card p-5 sm:p-7 mt-6">
+                <div class="os-track" aria-label="Order progress">
+                    @foreach ($steps as $label)
+                        <div class="os-step {{ $loop->iteration <= $reached ? 'on' : '' }}">
+                            <i>{!! $loop->iteration <= $reached ? '&#10003;' : $loop->iteration !!}</i>{{ $label }}
                         </div>
+                    @endforeach
+                </div>
+            </div>
+
+            @if (session('new_account') && ! auth()->check())
+                <div class="os-note mt-6">
+                    <svg class="ic w-5 h-5 shrink-0 text-primary mt-0.5" aria-hidden="true"><use href="#i-user" /></svg>
+                    <p>We created an account for you. Sign in with <b>{{ $order->phone }}</b> and the password <b>{{ \App\Services\CheckoutService::startingPassword($order->phone) }}</b> to see all your orders. You can change the password after signing in.</p>
+                </div>
+            @endif
+
+            <div class="grid lg:grid-cols-[1.4fr_1fr] gap-6 mt-6 items-start">
+
+                <div class="card p-5 sm:p-7">
+
+                    <h2 class="os-title"><svg class="ic" aria-hidden="true"><use href="#i-bag" /></svg> Order summary</h2>
+
+                    <div class="mt-3">
+                        @foreach ($order->items as $item)
+                            <div class="os-item">
+                                <img src="{{ $item->image }}" alt="">
+                                <div class="min-w-0 flex-1">
+                                    <p class="font-semibold text-sm leading-snug line-clamp-2">{{ $item->name }}</p>
+                                    @if ($item->variant_label)
+                                        <p class="text-xs text-ink/50 mt-0.5">{{ $item->variant_label }}</p>
+                                    @endif
+                                    <span class="q">৳{{ number_format($item->unit_price) }} × {{ $item->quantity }}</span>
+                                </div>
+                                <b class="text-sm">৳{{ number_format($item->line_total) }}</b>
+                            </div>
+                        @endforeach
                     </div>
 
-                    <div>
-                        <h2 class="font-display font-bold mb-3">Delivering to</h2>
-                        <p class="text-sm text-ink/70 leading-relaxed">
-                            {{ $order->name }}<br>
-                            {{ $order->phone }}<br>
-                            {{ $order->address }}, {{ $order->area }}, {{ $order->district }}
-                        </p>
+                    <dl class="os-sum">
+                        <div><dt>Subtotal</dt><dd class="font-semibold">৳{{ number_format($order->subtotal) }}</dd></div>
+                        @if ($order->discount > 0)
+                            <div><dt>Discount @if ($order->coupon_code)({{ $order->coupon_code }})@endif</dt><dd class="font-semibold text-success">-৳{{ number_format($order->discount) }}</dd></div>
+                        @endif
+                        <div><dt>Delivery @if ($order->zone_label)({{ $order->zone_label }})@endif</dt><dd class="font-semibold">{{ $order->delivery_fee > 0 ? '৳'.number_format($order->delivery_fee) : 'Free' }}</dd></div>
+                        <div class="total"><dt class="font-bold">Total to pay</dt><dd>৳{{ number_format($order->total) }}</dd></div>
+                    </dl>
 
-                        <h2 class="font-display font-bold mt-5 mb-2">What happens next</h2>
-                        <ol class="text-sm text-ink/70 space-y-2 list-decimal pl-5">
-                            <li>We call to confirm your order.</li>
-                            <li>Your jersey is packed &amp; handed to the courier.</li>
-                            <li>Pay cash on delivery.</li>
+                </div>
+
+                <div class="space-y-6">
+
+                    <div class="card p-5 sm:p-7">
+                        <h2 class="os-title"><svg class="ic" aria-hidden="true"><use href="#i-pin" /></svg> Delivery details</h2>
+                        <dl class="os-info">
+                            <div><dt>Name</dt><dd>{{ $order->name }}</dd></div>
+                            <div><dt>Phone</dt><dd>{{ $order->phone }}</dd></div>
+                            <div><dt>Address</dt><dd>{{ $order->address }}, {{ $order->area }}, {{ $order->district }}</dd></div>
+                            @if ($order->note)
+                                <div><dt>Note</dt><dd>{{ $order->note }}</dd></div>
+                            @endif
+                        </dl>
+                    </div>
+
+                    <div class="card p-5 sm:p-7">
+                        <h2 class="os-title"><svg class="ic" aria-hidden="true"><use href="#i-clock" /></svg> What happens next</h2>
+                        <ol class="os-next">
+                            <li>We call to confirm your order and details.</li>
+                            <li>Your jersey is checked, packed and handed to the courier.</li>
+                            <li>Pay cash to the courier when it arrives.</li>
                         </ol>
                     </div>
 
                 </div>
 
-                <div class="flex flex-wrap gap-3 justify-center mt-8">
-                    <a href="{{ route('track.show') }}" class="btn btn-primary btn-lg">Track order</a>
-                    <a href="{{ route('shop') }}" class="btn btn-ghost btn-lg">Continue shopping</a>
-                </div>
+            </div>
 
+            <div class="os-actions flex flex-wrap gap-3 justify-center mt-8">
+                <a href="{{ route('track.show') }}" class="btn btn-primary btn-lg">Track order</a>
+                <a href="{{ route('checkout.invoice', $order->number) }}" class="btn btn-ghost btn-lg">View invoice</a>
+                <a href="{{ route('shop') }}" class="btn btn-ghost btn-lg">Continue shopping</a>
             </div>
 
         </div>
