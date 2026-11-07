@@ -13,66 +13,13 @@
             <img src="{{asset('assets/frontend/img/logo_white.png')}}" alt="" class="logo-d w-auto" style="height:50px;">
         </a>
 
-        <nav id="site-nav" class="site-nav" aria-label="Main">
-
-            <div class="nav-head lg:hidden">
-                <span class="font-display font-extrabold text-lg">Menu</span>
-                <button type="button" class="icon-btn" data-nav-close aria-label="Close menu">
-                    <svg class="ic " aria-hidden="true">
-                        <use href="#i-x" />
-                    </svg>
-                </button>
-            </div>
-
-            <a href="{{ route('home') }}" class="nav-link" aria-current="page">Home</a>
-
-            <div class="has-sub">
-                <div class="flex items-center">
-                    <a href="{{ route('shop') }}" class="nav-link flex-1">
-                        Shop
-                        <svg class="ic nav-chev" aria-hidden="true">
-                            <use href="#i-chev-down" />
-                        </svg>
-                    </a>
-                    <button type="button" class="sub-toggle" aria-label="Show categories" aria-expanded="false">
-                        <svg class="ic w-4 h-4" aria-hidden="true">
-                            <use href="#i-chev-down" />
-                        </svg>
-                    </button>
-                </div>
-                <div class="sub">
-                    <a href="{{ route('shop') }}">All products</a>
-                    @foreach ($menuCategories->take(8) as $menuCategory)
-                        <a href="{{ $menuCategory->url }}">{{ $menuCategory->name }}</a>
-                    @endforeach
-                </div>
-            </div>
-
-            <a href="{{ route('track.show') }}" class="nav-link">Track Order</a>
-
-            <a href="{{ route('about.show') }}" class="nav-link">About</a>
-
-            <a href="{{ route('contact.show') }}" class="nav-link">Contact</a>
-
-            <div class="nav-foot lg:hidden">
-                @auth
-                    <a href="{{ route('account.index') }}" class="btn btn-primary w-full">My account</a>
-                @else
-                    <a href="{{ route('login') }}" class="btn btn-primary w-full">Login / Register</a>
-                @endauth
-                <p class="text-xs text-ink/50 mt-3">Cash on Delivery all over Bangladesh</p>
-            </div>
-
-        </nav>
-
-        <form class="search order-last w-full lg:order-none lg:w-auto lg:flex-1 lg:max-w-md lg:ml-auto" action="{{ route('search') }}" role="search">
+        <form class="search hd-search" action="{{ route('search') }}" role="search">
             <svg class="ic ic-search" aria-hidden="true">
                 <use href="#i-search" />
             </svg>
             <input type="search" name="q" placeholder="Search jerseys, clubs, years…" aria-label="Search jerseys" autocomplete="off">
         </form>
-
-        <div class="flex items-center gap-0.5 sm:gap-1">
+        <div class="flex items-center gap-0.5 sm:gap-1 hd-icons">
 
             <button type="button" class="icon-btn" data-theme-toggle aria-label="Toggle dark mode">
                 <span class="theme-sun">
@@ -109,6 +56,58 @@
 
         </div>
 
+    </div>
+
+    <div class="hd-nav">
+        <div class="container-x">
+
+            <nav id="site-nav" class="site-nav" aria-label="Main">
+
+                <div class="nav-head lg:hidden">
+                    <span class="font-display font-extrabold text-lg">Menu</span>
+                    <button type="button" class="icon-btn" data-nav-close aria-label="Close menu">
+                        <svg class="ic " aria-hidden="true">
+                            <use href="#i-x" />
+                        </svg>
+                    </button>
+                </div>
+
+                <a href="{{ route('shop') }}" class="nav-link" @if (request()->routeIs('shop')) aria-current="page" @endif>All Jerseys</a>
+
+                @foreach ($menuCategories->take(8) as $menuCategory)
+                    <a href="{{ $menuCategory->url }}" class="nav-link" @if (url()->current() === $menuCategory->url) aria-current="page" @endif>{{ $menuCategory->name }}</a>
+                @endforeach
+
+                @if ($menuCategories->count() > 8)
+                    <div class="has-sub nav-more">
+                        <div class="flex items-center">
+                            <span class="nav-link flex-1 cursor-pointer" tabindex="0">
+                                More
+                                <svg class="ic nav-chev" aria-hidden="true">
+                                    <use href="#i-chev-down" />
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="sub">
+                            @foreach ($menuCategories->slice(8) as $menuCategory)
+                                <a href="{{ $menuCategory->url }}">{{ $menuCategory->name }}</a>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                <div class="nav-foot lg:hidden">
+                    @auth
+                        <a href="{{ route('account.index') }}" class="btn btn-primary w-full">My account</a>
+                    @else
+                        <a href="{{ route('login') }}" class="btn btn-primary w-full">Login / Register</a>
+                    @endauth
+                    <p class="text-xs text-ink/50 mt-3">Cash on Delivery all over Bangladesh</p>
+                </div>
+
+            </nav>
+
+        </div>
     </div>
 
 </header>
