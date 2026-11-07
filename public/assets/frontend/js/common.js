@@ -64,8 +64,7 @@
     has: function (id) { return wishIds.indexOf(String(id)) > -1; },
     toggle: function (id) {
       if (!WISH.auth) {
-        toast('Please log in to save jerseys to your wishlist', 'error');
-        setTimeout(function () { location.href = WISH.login; }, 900);
+        toast('Please sign in to save items to your wishlist.', 'error');
         return Promise.resolve({ ok: false });
       }
       return fetch(WISH.toggle, {
@@ -73,7 +72,7 @@
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, 'X-Requested-With': 'XMLHttpRequest' },
         body: JSON.stringify({ product_id: +id })
       }).then(function (res) {
-        if (res.status === 401 || res.status === 419) { location.href = WISH.login; return { ok: false }; }
+        if (res.status === 401 || res.status === 419) { return { ok: false, message: 'Please sign in to save items to your wishlist.' }; }
         return res.json().catch(function () { return {}; }).then(function (data) {
           if (!res.ok) return { ok: false, message: data.message || 'Something went wrong. Please try again.' };
           wishIds = wishIds.filter(function (x) { return x !== String(id); });
@@ -131,7 +130,7 @@
     qa = card.dataset; qvar = null; qvars = [];
     try { qvars = JSON.parse(qa.variants || 'null'); } catch (e) { qvars = null; }
     if (qvars === null) { location.href = qa.url; return; } /* card without variant data: open the product page */
-    if (!qvars.length) { cart.add({ product_id: +qa.id, quantity: 1 }).then(function (r) { done(r, 'Added to cart'); if (r.ok) openDrawer(); }); return; }
+    if (!qvars.length) { cart.add({ product_id: +qa.id, quantity: 1 }).then(function (r) { done(r, 'Added to cart'); }); return; }
     $('#qm-img').src = qa.image; $('#qm-title').textContent = qa.name; $('#qm-price').textContent = fmt(qa.price);
     $('#qm-err').hidden = true;
     $('#qm-sizes').innerHTML = qvars.map(function (v) { var out = v.stock <= 0; return '<button type="button" class="size-chip' + (out ? ' is-out' : '') + '" data-variant="' + v.id + '"' + (out ? ' disabled' : '') + ' style="' + (out ? 'opacity:.4;text-decoration:line-through;cursor:not-allowed' : '') + '"><span>' + esc(v.label || 'Standard') + '</span></button>'; }).join('');
@@ -154,7 +153,7 @@
     if ((el = q('#qm-sizes .size-chip'))) { if (el.disabled) return; $$('#qm-sizes .size-chip').forEach(function (b) { b.classList.remove('on'); }); el.classList.add('on'); qvar = el.dataset.variant; $('#qm-err').hidden = true; return; }
     if (q('#qm-add')) {
       if (!qvar) { $('#qm-err').hidden = false; return; }
-      cart.add({ product_id: +qa.id, variant_id: +qvar, quantity: 1 }).then(function (r) { done(r, 'Added to cart'); if (r.ok) openDrawer(); });
+      cart.add({ product_id: +qa.id, variant_id: +qvar, quantity: 1 }).then(function (r) { done(r, 'Added to cart'); });
       return;
     }
     if ((el = q('[data-wish]'))) {

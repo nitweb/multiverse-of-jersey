@@ -72,7 +72,7 @@
   }
   var addBtn = $('#add-cart'), buyBtn = $('#buy-now');
   function busy(on) { [addBtn, buyBtn].forEach(function (b) { if (b) b.disabled = on; }); }
-  addBtn.addEventListener('click', function () { if (addBtn.disabled) return; var i = item(); if (!i) return; busy(true); JBD.cart.add(i).then(function (r) { busy(false); JBD.done(r, 'Added to cart'); if (r.ok) JBD.openDrawer(); }); });
+  addBtn.addEventListener('click', function () { if (addBtn.disabled) return; var i = item(); if (!i) return; busy(true); JBD.cart.add(i).then(function (r) { busy(false); JBD.done(r, 'Added to cart'); }); });
   if (buyBtn) buyBtn.addEventListener('click', function () { if (buyBtn.disabled) return; var i = item(); if (!i) return; busy(true); JBD.cart.add(i).then(function (r) { if (!r.ok) { busy(false); return JBD.done(r); } location.href = (r.cart && r.cart.checkout_url) || prod.dataset.checkout; }); });
 
   function tab(n) { $$('[data-tab-btn]').forEach(function (b) { b.classList.toggle('is-active', b.dataset.tabBtn === n); }); $$('[data-tab-panel]').forEach(function (p) { var on = p.dataset.tabPanel === n; p.hidden = !on; p.classList.toggle('is-active', on); }); }
