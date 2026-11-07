@@ -153,7 +153,7 @@
     if ((el = q('#qm-sizes .size-chip'))) { if (el.disabled) return; $$('#qm-sizes .size-chip').forEach(function (b) { b.classList.remove('on'); }); el.classList.add('on'); qvar = el.dataset.variant; $('#qm-err').hidden = true; return; }
     if (q('#qm-add')) {
       if (!qvar) { $('#qm-err').hidden = false; return; }
-      cart.add({ product_id: +qa.id, variant_id: +qvar, quantity: 1 }).then(function (r) { done(r, 'Added to cart'); });
+      cart.add({ product_id: +qa.id, variant_id: +qvar, quantity: 1 }).then(function (r) { done(r, 'Added to cart'); if (r.ok) closeAll(); });
       return;
     }
     if ((el = q('[data-wish]'))) {
