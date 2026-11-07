@@ -15,9 +15,11 @@
   /* ---------- toast ---------- */
   function toast(msg, type) {
     var box = $('#toasts'); if (!box) return;
-    var t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status');
-    t.innerHTML = '<svg class="ic" style="color:' + (type === 'error' ? '#f87171' : '#34d399') + '"><use href="#i-' + (type === 'error' ? 'info' : 'check') + '"/></svg><span>' + esc(msg) + '</span>';
-    box.appendChild(t); setTimeout(function () { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; }, 2400); setTimeout(function () { t.remove(); }, 2800);
+    var t = document.createElement('div'); t.className = 'toast' + (type === 'error' ? ' is-error' : ''); t.setAttribute('role', type === 'error' ? 'alert' : 'status');
+    t.innerHTML = '<span>' + esc(msg) + '</span><button type="button" class="toast-x" aria-label="Dismiss"><svg class="ic w-4 h-4" aria-hidden="true"><use href="#i-x"/></svg></button>';
+    function gone() { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(function () { t.remove(); }, 300); }
+    t.querySelector('.toast-x').addEventListener('click', gone);
+    box.appendChild(t); setTimeout(gone, 3500);
   }
 
   /* ---------- cart (server) ---------- */
