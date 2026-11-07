@@ -27,7 +27,7 @@ class SearchController extends Controller
         }
 
         $products = Product::active()
-            ->matching($term)
+            ->matchingName($term)
             ->with(['images', 'brand', 'category', 'variants'])
             ->orderByRaw('case when name like ? then 0 else 1 end', [$term.'%'])
             ->orderByDesc('sold_count')
@@ -47,7 +47,7 @@ class SearchController extends Controller
             return response()->json(['query' => $term, 'total' => 0, 'products' => []]);
         }
 
-        $query = Product::active()->matching($term);
+        $query = Product::active()->matchingName($term);
         $total = (clone $query)->count();
 
         $products = $query
