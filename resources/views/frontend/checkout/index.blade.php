@@ -4,22 +4,7 @@
     $storeName = $setting('store_name', 'Multiverse of Jersey');
     $returnDays = (int) $setting('return_days', 7);
     $oldDistrict = old('district', $prefill?->district);
-    $oldDivision = old('division');
-
-    if (! $oldDivision && $oldDistrict) {
-        foreach ($divisions as $divisionName => $districtList) {
-            if (in_array($oldDistrict, $districtList, true)) {
-                $oldDivision = $divisionName;
-            }
-        }
-    }
-
-    $zoneLabels = collect($cartSummary['zones'])->keyBy('key');
-    $zoneHints = [
-        'inside_dhaka' => 'Dhaka city',
-        'nearby_dhaka' => 'Gazipur, Narayanganj, Narsingdi, Munshiganj, Manikganj',
-        'outside_dhaka' => 'All other districts',
-    ];
+    $oldArea = old('area_txt', old('area', $prefill?->area));
 @endphp
 
 @section('frontend_title', 'Checkout | '.$storeName)
@@ -34,9 +19,8 @@
     <script>
         window.JBD_CHECKOUT = {
             divisions: @json($divisions),
-            zoneOf: @json($zoneOfDistrict),
-            prefillDivision: @json($oldDivision),
-            prefillDistrict: @json($oldDistrict)
+            thanas: @json($thanas),
+            zoneOf: @json($zoneOfDistrict)
         };
     </script>
     <script src="{{ asset('assets/frontend/js/pages/summary.js') }}" defer></script>
@@ -86,7 +70,7 @@
 
                     <section class="card p-5 sm:p-6">
 
-                        <h2 class="co-h"><span>1</span>Contact details</h2>
+                        <h2 class="co-h"><span>1</span>Delivery details</h2>
 
                         @if ($addresses->count() > 1)
                             <div class="mt-5">
@@ -103,103 +87,57 @@
 
                             <div>
                                 <label class="lbl" for="name">Full name <span class="text-danger">*</span></label>
-                                <input class="input" id="name" name="name" type="text" placeholder="Your full name" required maxlength="100" autocomplete="name" value="{{ old('name', $user?->name) }}">
+                                <input class="input" id="name" name="name" type="text" placeholder="e.g. Rahim Uddin" required maxlength="100" autocomplete="name" value="{{ old('name', $user?->name) }}">
                                 <p class="err" data-err="name">{{ $errors->first('name') }}</p>
                             </div>
 
                             <div>
-                                <label class="lbl" for="phone">Phone <span class="text-danger">*</span></label>
+                                <label class="lbl" for="phone">Mobile number <span class="text-danger">*</span></label>
                                 <input class="input" id="phone" name="phone" type="tel" placeholder="01XXXXXXXXX" required maxlength="14" autocomplete="tel" inputmode="numeric" value="{{ old('phone', $user?->phone) }}">
                                 <p class="err" data-err="phone">{{ $errors->first('phone') }}</p>
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label class="lbl" for="email">Email <span class="text-danger">*</span></label>
+                                <label class="lbl" for="email">Email address <span class="text-danger">*</span></label>
                                 <input class="input" id="email" name="email" type="email" placeholder="you@example.com" required maxlength="150" autocomplete="email" value="{{ old('email', $user?->email) }}">
                                 <p class="err" data-err="email">{{ $errors->first('email') }}</p>
                             </div>
 
-                        </div>
-
-                    </section>
-
-                    <section class="card p-5 sm:p-6">
-
-                        <h2 class="co-h"><span>2</span>Delivery address</h2>
-
-                        <div class="grid sm:grid-cols-2 gap-4 mt-5">
-
-                            <div>
-                                <label class="lbl" for="division">Division <span class="text-danger">*</span></label>
-                                <select class="input" id="division" name="division" required>
-                                    <option value="">Select division</option>
-                                    @foreach ($divisions as $divisionName => $districtList)
-                                        <option value="{{ $divisionName }}" @selected($oldDivision === $divisionName)>{{ $divisionName }}</option>
-                                    @endforeach
-                                </select>
-                                <p class="err" data-err="division"></p>
-                            </div>
-
-                            <div>
+                            <div class="sm:col-span-2 relative">
                                 <label class="lbl" for="district">District <span class="text-danger">*</span></label>
-                                <select class="input" id="district" name="district" required disabled>
-                                    <option value="">Select district</option>
-                                </select>
+                                <input class="input" id="district" name="district" type="text" required autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="district-list" placeholder="Search or select district" value="{{ $oldDistrict }}">
+                                <ul id="district-list" class="pick-list" role="listbox" hidden></ul>
                                 <p class="err" data-err="district">{{ $errors->first('district') }}</p>
                             </div>
 
-                            <div>
-                                <label class="lbl" for="thana">Thana / Area <span class="text-danger">*</span></label>
-                                <input class="input" id="thana" name="area_txt" type="text" placeholder="e.g. Dhanmondi" required maxlength="120" value="{{ old('area_txt', old('area', $prefill?->area)) }}">
+                            <div class="sm:col-span-2 relative">
+                                <label class="lbl" for="thana">Area / Thana <span class="text-danger">*</span></label>
+                                <input class="input" id="thana" name="area_txt" type="text" required autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="area-list" maxlength="120" @disabled(! $oldDistrict) placeholder="{{ $oldDistrict ? 'Select or type thana / upazila' : 'Select district first' }}" value="{{ $oldArea }}">
+                                <ul id="area-list" class="pick-list" role="listbox" hidden></ul>
                                 <p class="err" data-err="thana">{{ $errors->first('area') }}</p>
-                            </div>
-
-                            <div>
-                                <label class="lbl" for="postcode">Postcode</label>
-                                <input class="input" id="postcode" name="postcode" type="text" placeholder="e.g. 1209" inputmode="numeric" maxlength="10" value="{{ old('postcode') }}">
-                                <p class="err" data-err="postcode">{{ $errors->first('postcode') }}</p>
                             </div>
 
                             <div class="sm:col-span-2">
                                 <label class="lbl" for="address">Full address <span class="text-danger">*</span></label>
-                                <textarea class="input" id="address" name="address" rows="2" required maxlength="500" placeholder="House, road, area">{{ old('address', $prefill?->address) }}</textarea>
+                                <textarea class="input" id="address" name="address" rows="2" required maxlength="500" autocomplete="street-address" placeholder="House, road, block, landmark">{{ old('address', $prefill?->address) }}</textarea>
                                 <p class="err" data-err="address">{{ $errors->first('address') }}</p>
                             </div>
 
                             <div class="sm:col-span-2">
                                 <label class="lbl" for="note">Order note <span class="text-ink/40 font-normal">(optional)</span></label>
-                                <textarea class="input" id="note" name="note" rows="2" maxlength="500" placeholder="Anything we should know?">{{ old('note') }}</textarea>
+                                <textarea class="input" id="note" name="note" rows="2" maxlength="500" placeholder="Anything we should know, for example delivery time or gift wrap">{{ old('note') }}</textarea>
                                 <p class="err" data-err="note">{{ $errors->first('note') }}</p>
                             </div>
 
                         </div>
 
-                    </section>
-
-                    <section class="card p-5 sm:p-6">
-
-                        <h2 class="co-h"><span>3</span>Delivery method</h2>
-
-                        <div class="grid gap-3 mt-5" id="zones">
-                            @foreach ($cartSummary['zones'] as $zone)
-                                <label class="opt">
-                                    <input type="radio" name="zone" value="{{ $zone['key'] }}" data-charge="{{ $zone['fee'] }}" @checked($cartSummary['shipping']['zone'] === $zone['key']) disabled>
-                                    <span class="opt-t">
-                                        <b>{{ $zone['label'] }}</b>
-                                        <small>{{ $zoneHints[$zone['key']] ?? '' }}@if ($zone['time']) · {{ $zone['time'] }}@endif</small>
-                                    </span>
-                                    <b class="font-display">৳{{ number_format($zone['fee']) }}</b>
-                                </label>
-                            @endforeach
-                        </div>
-
-                        <p class="text-xs text-ink/55 mt-3" id="zone-msg">Select your district to see the delivery charge.</p>
+                        <p class="text-xs text-ink/55 mt-4" id="zone-msg" role="status">Select your district to see the delivery charge.</p>
 
                     </section>
 
                     <section class="card p-5 sm:p-6">
 
-                        <h2 class="co-h"><span>4</span>Payment</h2>
+                        <h2 class="co-h"><span>2</span>Payment</h2>
 
                         <div class="grid gap-3 mt-5">
 

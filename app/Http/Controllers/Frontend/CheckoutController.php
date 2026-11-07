@@ -31,6 +31,7 @@ class CheckoutController extends Controller
             'prefill' => $addresses->firstWhere('is_default', true) ?? $addresses->first(),
             'cartSummary' => $this->cart->summary(),
             'divisions' => config('locations.divisions'),
+            'thanas' => config('locations.thanas'),
             'zoneOfDistrict' => collect(CheckoutService::districts())
                 ->mapWithKeys(fn (string $district) => [$district => CheckoutService::zoneOf($district)])
                 ->all(),
@@ -45,10 +46,6 @@ class CheckoutController extends Controller
 
         try {
             $data = $request->safe()->only(['name', 'phone', 'email', 'district', 'area', 'address', 'note']);
-
-            if ($postcode = trim((string) $request->input('postcode'))) {
-                $data['address'] = $data['address'].', '.$postcode;
-            }
 
             $order = $this->checkout->place($data);
         } catch (DomainException $e) {

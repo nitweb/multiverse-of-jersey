@@ -1,27 +1,69 @@
-/* Checkout page (server cart): division → district picker, delivery zone from district, validation, place order. */
+/* Checkout page (server cart): district → area / thana pickers, delivery zone from district, validation, place order. */
 (function () {
   'use strict';
   var $ = function (s, c) { return (c || document).querySelector(s); }, $$ = function (s, c) { return [].slice.call((c || document).querySelectorAll(s)); };
   var form = $('#checkout-form'), cfg = window.JBD_CHECKOUT; if (!form || !cfg) return;
 
-  var division = $('#division'), district = $('#district'), zoneMsg = $('#zone-msg');
+  var district = $('#district'), thana = $('#thana'), zoneMsg = $('#zone-msg');
 
   /* empty cart: send the visitor back to the cart page */
   function guardEmpty() { if (!JBD.cart.get().length) location.href = (window.JBD_SERVER.routes || {}).cart || '/cart'; }
 
-  function fillDistricts(keep) {
-    var list = cfg.divisions[division.value] || [];
-    district.innerHTML = '<option value="">Select district</option>' + list.map(function (d) { return '<option value="' + JBD.esc(d) + '">' + JBD.esc(d) + '</option>'; }).join('');
-    district.disabled = !list.length;
-    if (keep && list.indexOf(keep) > -1) district.value = keep;
+  /* district list (alphabetical) with its division, and the thana list per district */
+  var ALL = [];
+  Object.keys(cfg.divisions).forEach(function (d) { cfg.divisions[d].forEach(function (n) { ALL.push({ n: n, d: d }); }); });
+  ALL.sort(function (a, b) { return a.n.localeCompare(b.n); });
+  function find(v) { v = (v || '').trim().toLowerCase(); return ALL.filter(function (x) { return x.n.toLowerCase() === v; })[0] || null; }
+
+  /* searchable pick list: used for both district and area / thana */
+  function picker(input, list, source, onPick) {
+    var shown = [], idx = -1;
+    function items() { return list.querySelectorAll('li[data-i]'); }
+    function render(q) {
+      q = (q || '').trim().toLowerCase();
+      shown = source().filter(function (x) { return !q || x.n.toLowerCase().indexOf(q) > -1; });
+      idx = shown.length ? 0 : -1;
+      list.innerHTML = shown.length ? shown.map(function (x, i) { return '<li role="option" data-i="' + i + '"' + (i === 0 ? ' class="on"' : '') + '>' + JBD.esc(x.n) + (x.d ? '<small>' + JBD.esc(x.d) + '</small>' : '') + '</li>'; }).join('') : '<li class="none">Nothing found</li>';
+      list.hidden = false; input.setAttribute('aria-expanded', 'true');
+    }
+    function close() { list.hidden = true; input.setAttribute('aria-expanded', 'false'); }
+    function pick(i) { if (!shown[i]) return; input.value = shown[i].n; close(); onPick(); }
+    function mark() { [].forEach.call(items(), function (e, i) { e.classList.toggle('on', i === idx); }); if (items()[idx]) items()[idx].scrollIntoView({ block: 'nearest' }); }
+    input.addEventListener('focus', function () { if (!input.disabled) { render(''); input.select(); } });
+    input.addEventListener('input', function () { render(input.value); });
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown') { e.preventDefault(); if (list.hidden) render(''); else { idx = Math.min(idx + 1, shown.length - 1); mark(); } }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); idx = Math.max(idx - 1, 0); mark(); }
+      else if (e.key === 'Enter' && !list.hidden) { e.preventDefault(); pick(idx); }
+      else if (e.key === 'Escape' || e.key === 'Tab') close();
+    });
+    list.addEventListener('mousedown', function (e) { var li = e.target.closest('li[data-i]'); if (li) { e.preventDefault(); pick(+li.dataset.i); } });
+    document.addEventListener('click', function (e) { if (!input.contains(e.target) && !list.contains(e.target)) close(); });
+    input.addEventListener('blur', function () { setTimeout(function () { close(); onPick(true); }, 120); });
   }
+
+  var lastDistrict = null;
+  function syncDistrict() {
+    var m = find(district.value), n = m ? m.n : '';
+    if (m && district.value !== n) district.value = n;
+    if (n !== lastDistrict) {
+      if (lastDistrict !== null) thana.value = '';
+      lastDistrict = n;
+      thana.disabled = !n;
+      thana.placeholder = n ? 'Select or type thana / upazila' : 'Select district first';
+    }
+    applyZone();
+  }
+
+  picker(district, $('#district-list'), function () { return ALL; }, syncDistrict);
+  picker(thana, $('#area-list'), function () { return (cfg.thanas[(find(district.value) || {}).n] || []).map(function (n) { return { n: n }; }); }, function () {});
 
   var zones = {};
   $$('#zones input[name=zone]').forEach(function (i) { zones[i.value] = i; });
   var lastZone = null;
 
   function applyZone() {
-    var z = cfg.zoneOf[district.value] || null;
+    var m = find(district.value), z = m ? (cfg.zoneOf[m.n] || null) : null;
     JBD.summary.showShip = !!z;
     $$('#zones .opt').forEach(function (l) { l.classList.toggle('is-on', !!z && l.querySelector('input').value === z); });
     if (zones[z]) zones[z].checked = true;
@@ -39,18 +81,13 @@
     zoneMsg.textContent = s.label + ' delivery: ' + (s.free ? 'Free' : JBD.fmt(s.fee)) + (s.time ? ', arrives in ' + s.time : '') + '.';
   }
 
-  division.addEventListener('change', function () { fillDistricts(); applyZone(); });
-  district.addEventListener('change', applyZone);
-
   /* saved addresses */
   var saved = $('#saved-address');
   function useSaved() {
     var o = saved.options[saved.selectedIndex]; if (!o) return;
     form.name.value = o.dataset.name || form.name.value; form.phone.value = o.dataset.phone || form.phone.value;
-    var dName = Object.keys(cfg.divisions).filter(function (k) { return cfg.divisions[k].indexOf(o.dataset.district) > -1; })[0] || '';
-    division.value = dName; fillDistricts(o.dataset.district);
-    $('#thana').value = o.dataset.area || ''; $('#address').value = o.dataset.address || '';
-    applyZone();
+    district.value = o.dataset.district || ''; lastDistrict = null; syncDistrict();
+    thana.value = o.dataset.area || ''; $('#address').value = o.dataset.address || '';
   }
   if (saved) saved.addEventListener('change', useSaved);
 
@@ -59,8 +96,7 @@
     name: function (v) { return v.trim().length >= 2 ? '' : 'Enter your full name.'; },
     phone: function (v) { return /^(\+?88)?01[3-9]\d{8}$/.test(v.replace(/[\s-]/g, '')) ? '' : 'Enter a valid mobile number, like 01XXXXXXXXX.'; },
     email: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) ? '' : 'Enter a valid email address.'; },
-    division: function (v) { return v ? '' : 'Select your division.'; },
-    district: function (v) { return v ? '' : 'Select your district.'; },
+    district: function (v) { return find(v) ? '' : 'Select a district from the list.'; },
     thana: function (v) { return v.trim() ? '' : 'Enter your area or thana.'; },
     address: function (v) { return v.trim().length >= 5 ? '' : 'Enter your full address.'; }
   };
@@ -77,7 +113,7 @@
   });
 
   /* start */
-  if (cfg.prefillDivision) { division.value = cfg.prefillDivision; fillDistricts(cfg.prefillDistrict); }
+  syncDistrict();
   document.addEventListener('cart:change', guardEmpty);
   guardEmpty(); applyZone();
 })();

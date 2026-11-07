@@ -63,3 +63,11 @@
 .tk-badge.is-cancelled,.tk-badge.is-returned{background:rgb(var(--color-danger)/.12);color:rgb(var(--color-danger))}
 .timeline li.stop .dot{background:rgb(var(--color-danger));border-color:rgb(var(--color-danger));color:#fff}
 .timeline li.stop{color:rgb(var(--color-ink))}
+
+/* District / area pick lists */
+.pick-list{position:absolute;left:0;right:0;top:100%;margin-top:-14px;z-index:40;max-height:240px;overflow-y:auto;background:rgb(var(--color-surface));border:1px solid rgb(var(--color-line));border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);padding:4px}
+.pick-list[hidden]{display:none}
+.pick-list li{padding:9px 12px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;display:flex;justify-content:space-between;gap:8px}
+.pick-list li small{font-weight:500;opacity:.55}
+.pick-list li.on,.pick-list li:hover{background:rgb(var(--color-primary-soft))}
+.pick-list li.none{cursor:default;opacity:.6}
