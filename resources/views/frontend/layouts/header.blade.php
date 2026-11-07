@@ -13,11 +13,11 @@
             <img src="{{asset('assets/frontend/img/logo_white.png')}}" alt="" class="logo-d w-auto" style="height:50px;">
         </a>
 
-        <form class="search hd-search" action="{{ route('search') }}" role="search">
+        <form class="search hd-search" action="{{ route('search') }}" method="GET" role="search" data-suggest-url="{{ route('search.suggest') }}">
             <svg class="ic ic-search" aria-hidden="true">
                 <use href="#i-search" />
             </svg>
-            <input type="search" name="q" placeholder="Search jerseys, clubs, years…" aria-label="Search jerseys" autocomplete="off">
+            <input type="search" id="header-search" name="q" placeholder="Search jerseys, clubs, years…" aria-label="Search jerseys" autocomplete="off">
         </form>
         <div class="flex items-center gap-0.5 sm:gap-1 hd-icons">
 
